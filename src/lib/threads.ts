@@ -3,7 +3,7 @@ import { getThreadsConfig, getEffectiveScopes } from "./config";
 
 const GRAPH = "https://graph.threads.net";
 const AUTH_URL = "https://www.threads.net/oauth/authorize";
-const TOKEN_URL = "https://graph.threads.net/access_token";
+const TOKEN_URL = "https://graph.threads.net/oauth/access_token";
 
 export const PUBLISHING_LIMIT = 250; // post / 24 jam
 export const REPLY_LIMIT = 1000; // reply / 24 jam
@@ -109,11 +109,15 @@ export async function exchangeCode(code: string): Promise<{ access_token: string
 
 export async function exchangeForLongLivedToken(shortToken: string): Promise<{ access_token: string; expires_in: number }> {
   const { clientSecret } = await getThreadsConfig();
-  return formRequest(TOKEN_URL, {
+  const params = new URLSearchParams({
     grant_type: "th_exchange_token",
     client_secret: clientSecret,
     access_token: shortToken,
   });
+  const res = await fetch(`${GRAPH}/access_token?${params}`, { cache: "no-store" });
+  const data = await parseJson(res);
+  if (!res.ok || data.error) throw new ApiError(data.error?.message ?? "Permintaan token gagal", "TOKEN");
+  return data;
 }
 
 export async function getMe(accessToken: string) {
