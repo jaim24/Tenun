@@ -14,11 +14,17 @@ export async function GET(req: Request) {
     return NextResponse.redirect(`${appUrl}/app/settings?connected=denied`);
   }
 
+  let stage = "exchange_code";
   try {
     const { access_token: shortToken, user_id } = await exchangeCode(code);
+    if (!shortToken) throw new Error("Respons pertukaran kode tidak berisi access_token");
+    stage = "exchange_long_lived_token";
     const long = await exchangeForLongLivedToken(shortToken);
+    if (!long.access_token) throw new Error("Respons token jangka panjang tidak berisi access_token");
+    stage = "get_profile";
     const me = await getMe(long.access_token);
 
+    stage = "save_account";
     const accountId = String(user_id ?? me.id);
     const exists = await prisma.account.findUnique({ where: { threadsUserId: accountId } });
 
@@ -44,7 +50,13 @@ export async function GET(req: Request) {
     return NextResponse.redirect(`${appUrl}/app/settings?connected=ok`);
   } catch (e) {
     const message = e instanceof ApiError ? e.message : e instanceof Error ? e.message : "Gagal bertukar kode";
-    await logActivity("ERROR", `Gagal konek Threads: ${message}`);
+    const diagnostic = {
+      stage,
+      code: e instanceof ApiError ? e.code : undefined,
+      status: e instanceof ApiError ? e.status : undefined,
+    };
+    console.error("[threads-oauth]", diagnostic);
+    await logActivity("ERROR", `Gagal konek Threads [${stage}]: ${message}`, diagnostic);
     return NextResponse.redirect(`${appUrl}/app/settings?connected=error&reason=${encodeURIComponent(message)}`);
   }
 }

@@ -4,6 +4,7 @@ const vm = require('node:vm');
 const ts = require('typescript');
 
 const calls = [];
+let failRequest = false;
 const api = {};
 const source = fs.readFileSync(require('node:path').join(__dirname, '../src/lib/threads.ts'), 'utf8');
 vm.runInNewContext(ts.transpileModule(source, {
@@ -16,6 +17,7 @@ vm.runInNewContext(ts.transpileModule(source, {
   URLSearchParams,
   fetch: async (url, options) => {
     calls.push({ url: new URL(url), options });
+    if (failRequest) return { ok: false, status: 400, text: async () => JSON.stringify({ error: { message: 'Test OAuth failure', code: 190 } }) };
     return { ok: true, text: async () => JSON.stringify({ access_token: 'test-token', user_id: '123', expires_in: 5184000 }) };
   },
 });
@@ -32,5 +34,14 @@ vm.runInNewContext(ts.transpileModule(source, {
   assert.equal(calls[1].url.searchParams.get('grant_type'), 'th_exchange_token');
   assert.equal(calls[1].url.searchParams.get('access_token'), 'short-token');
   assert.equal(calls[1].options.cache, 'no-store');
+  failRequest = true;
+  for (const request of [() => api.exchangeCode('test-code'), () => api.exchangeForLongLivedToken('short-token')]) {
+    await assert.rejects(request, error => {
+      assert.equal(error.message, 'Test OAuth failure');
+      assert.equal(error.code, '190');
+      assert.equal(error.status, 400);
+      return true;
+    });
+  }
   console.log('Threads OAuth request checks passed');
 })().catch(error => { console.error(error); process.exitCode = 1; });

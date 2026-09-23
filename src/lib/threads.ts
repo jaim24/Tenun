@@ -49,7 +49,7 @@ async function formRequest(url: string, params: Record<string, string>) {
     body,
   });
   const data = await parseJson(res);
-  if (!res.ok || data.error) throw new ApiError(data.error?.message ?? "Permintaan token gagal", "TOKEN");
+  if (!res.ok || data.error) throw new ApiError(data.error?.message ?? "Permintaan token gagal", String(data.error?.code ?? "TOKEN"), res.status);
   return data;
 }
 
@@ -116,7 +116,7 @@ export async function exchangeForLongLivedToken(shortToken: string): Promise<{ a
   });
   const res = await fetch(`${GRAPH}/access_token?${params}`, { cache: "no-store" });
   const data = await parseJson(res);
-  if (!res.ok || data.error) throw new ApiError(data.error?.message ?? "Permintaan token gagal", "TOKEN");
+  if (!res.ok || data.error) throw new ApiError(data.error?.message ?? "Permintaan token gagal", String(data.error?.code ?? "TOKEN"), res.status);
   return data;
 }
 
