@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tenun — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "umbra-canvas": "#0D0D0E",
+            "graphite-panel": "#161618",
+            "ash-rise": "#1E1E21",
+            "foam-ink": "#F4F4F5",
+            "slate-mute": "#A1A1AA",
+            "dim-veil": "#70707A",
+            "ember": "#E8633C",
+            "healthy-lime": "#4ADE80",
+            "caution-amber": "#FBBF24",
+            "coral-alert": "#F87171",
+            "hairline": "rgba(244, 244, 245, 0.08)",
+            "hairline-subtle": "rgba(244, 244, 245, 0.04)"
+          },
+          fontFamily: {
+            sans: ["Geist", "sans-serif"],
+            mono: ["Geist Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+<style id="tenun-typography">
+  .font-headline-xl{font-family:"Geist",sans-serif;font-size:2.25rem;line-height:2.75rem;font-weight:600;letter-spacing:-0.03em}
+  .font-headline-lg{font-family:"Geist",sans-serif;font-size:1.5rem;line-height:2rem;font-weight:500;letter-spacing:-0.02em}
+  .font-headline-md{font-family:"Geist",sans-serif;font-size:1.125rem;line-height:1.5rem;font-weight:500;letter-spacing:-0.015em}
+  .font-body-editorial{font-family:"Geist",sans-serif;font-size:0.9375rem;line-height:1.5rem;letter-spacing:-0.005em}
+  .font-body-dense{font-family:"Geist",sans-serif;font-size:0.8125rem;line-height:1.25rem}
+  .font-label-ui{font-family:"Geist",sans-serif;font-size:0.75rem;line-height:1rem;font-weight:500;letter-spacing:0.02em}
+  .font-label-mono{font-family:"Geist Mono",monospace;font-size:0.75rem;line-height:1rem;font-weight:400;letter-spacing:0}
+  .text-data-metric{font-family:"Geist Mono",monospace;font-size:1.125rem;line-height:1.25rem;font-weight:500;letter-spacing:-0.01em}
+  .text-data-mono-xs{font-family:"Geist Mono",monospace;font-size:0.6875rem;line-height:0.875rem;font-weight:400;letter-spacing:0.02em}
+</style>
+<style>
+    body {
+      background-color: #0D0D0E;
+      color: #F4F4F5;
+      font-family: 'Geist', sans-serif;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    @keyframes breathing {
+      0%, 100% { opacity: 0.35; transform: scale(0.96); }
+      50% { opacity: 1; transform: scale(1.04); }
+    }
+    .animate-breathing-dot {
+      animation: breathing 2.4s ease-in-out infinite;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0D0D0E;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1E1E21;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #70707A;
+    }
+  </style>
+</head>
+<body class="bg-umbra-canvas text-foam-ink min-h-screen selection:bg-ember selection:text-umbra-canvas font-sans text-[13px] leading-relaxed">
+<!-- Persistent Left Sidebar (Fixed 240px) -->
+<aside class="fixed left-0 top-0 bottom-0 w-60 bg-graphite-panel border-r border-hairline z-50 flex flex-col justify-between select-none">
+<div class="flex flex-col">
+<!-- App Brand Header -->
+<div class="h-14 px-4 flex items-center justify-between border-b border-hairline">
+<div class="flex items-center gap-2.5">
+<img alt="Tenun Logo" class="w-7 h-7 rounded-md object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XQpQe1pxUPZEKDdIxJ2scm11TzW2CJEi9uKTiBYK-HBklGlO-Gu27J2iaeM05JS3FHzNp0fbPKmvNUfN84Y5bLvtFK3p9--ZIqx6X0Ujk8VQo_aOiKTZZU55swKxGH-xLNy4-14DdHmRqeHG5aHjwdvCuQXDYidd_yRKMTVaYSgtiNZd0gVO9lLVdYxLjnVRoh49TpddWxAa6ziaCu6PoB0ygvzFV3zqJ63_QkyMBFxZZfVLWd01o5Zi4"/>
+<span class="font-mono text-sm font-semibold tracking-tight text-foam-ink uppercase">Tenun</span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-ash-rise border border-hairline">
+<span class="w-1.5 h-1.5 rounded-full bg-ember animate-breathing-dot"></span>
+<span class="font-mono text-[10px] tracking-wider text-slate-mute uppercase">Live</span>
+</div>
+</div>
+<!-- Rate Quota Quick Bar -->
+<div class="px-4 py-3 border-b border-hairline bg-graphite-panel">
+<div class="flex items-center justify-between font-mono text-[11px] mb-1.5">
+<span class="text-slate-mute uppercase tracking-wider">Rate Quota</span>
+<span class="text-foam-ink font-medium">217 <span class="text-dim-veil">/ 250</span></span>
+</div>
+<div class="w-full h-1 bg-ash-rise rounded-full overflow-hidden">
+<div class="h-full bg-caution-amber w-[86.8%]"></div>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col p-2 space-y-0.5">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-foam-ink bg-ash-rise border-l-2 border-ember font-medium transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px] text-foam-ink">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">edit_note</span>
+<span>Compose Post</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]">forum</span>
+<span>Reply Queue</span>
+</div>
+<span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-ash-rise text-slate-mute border border-hairline">14</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">manage_search</span>
+<span>Keyword Search</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span>Settings / Accounts</span>
+</a>
+</nav>
+</div>
+<!-- Bottom User Profile Card -->
+<div class="p-3 border-t border-hairline bg-graphite-panel">
+<div class="flex items-center gap-2.5 px-2 py-1.5 rounded hover:bg-ash-rise/60 transition-colors">
+<img alt="Bramantyo" class="w-8 h-8 rounded-full object-cover ring-1 ring-hairline" src="https://lh3.googleusercontent.com/aida/AEtjO1XujctwhPj1DD5tMxpxS6HMOi_Sw_--p6vjBf7jFVZ-bagoeSHmyoEkS94abVmyrIRMS4CrP2z13hk-QFtR2CiBegs4ZaZITOaWf996lTHRryMcB3YxZaZ7OBt4aNShPAsKrBGjH-lxoojEMyxTO0myStgDKl-L3rMvEJIvhlD8Sea0hmGg50va7us2zCG3PGpXKANkbjsjrw-v6FMIlPzotd6ewVvtyKPXm-T9aDJxTm8YfKfbaGT0KWRx"/>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="text-[12px] font-medium text-foam-ink truncate leading-tight">Bramantyo</span>
+<span class="font-mono text-[10px] text-slate-mute truncate">@bramantyo.threads</span>
+</div>
+<button class="text-slate-mute hover:text-foam-ink transition-colors p-1" title="Sign out" type="button">
+<span class="material-symbols-outlined text-[16px] leading-none">logout</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrapper (offset by sidebar width 240px) -->
+<div class="pl-60 flex flex-col min-h-screen">
+<!-- Persistent Top Bar (h-14) -->
+<header class="h-14 bg-graphite-panel/90 backdrop-blur-md border-b border-hairline sticky top-0 z-40 px-6 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<!-- Live Stream Telemetry -->
+<div class="flex items-center gap-2 font-mono text-[11px] text-slate-mute">
+<span class="w-2 h-2 rounded-full bg-ember animate-breathing-dot"></span>
+<span class="text-foam-ink font-medium tracking-wide">LIVE STREAM_STABLE</span>
+</div>
+<span class="h-3 w-px bg-hairline"></span>
+<div class="flex items-center gap-1.5 font-mono text-[11px] text-slate-mute">
+<span>LATENCY:</span>
+<span class="text-healthy-lime font-mono">28ms</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<!-- Quick Action Trigger -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-ember text-umbra-canvas font-semibold text-[12px] hover:opacity-95 active:scale-[0.99] transition-all" type="button">
+<span class="material-symbols-outlined text-[16px] leading-none">add</span>
+<span>New Broadcast</span>
+</button>
+<span class="h-3 w-px bg-hairline"></span>
+<button class="p-1.5 text-slate-mute hover:text-foam-ink transition-colors" title="Notifications" type="button">
+<span class="material-symbols-outlined text-[18px] leading-none">notifications</span>
+</button>
+<img alt="Bramantyo" class="w-7 h-7 rounded-full object-cover ring-1 ring-hairline" src="https://lh3.googleusercontent.com/aida/AEtjO1XujctwhPj1DD5tMxpxS6HMOi_Sw_--p6vjBf7jFVZ-bagoeSHmyoEkS94abVmyrIRMS4CrP2z13hk-QFtR2CiBegs4ZaZITOaWf996lTHRryMcB3YxZaZ7OBt4aNShPAsKrBGjH-lxoojEMyxTO0myStgDKl-L3rMvEJIvhlD8Sea0hmGg50va7us2zCG3PGpXKANkbjsjrw-v6FMIlPzotd6ewVvtyKPXm-T9aDJxTm8YfKfbaGT0KWRx"/>
+</div>
+</header>
+<!-- Dashboard Content Canvas -->
+<main class="flex-1 p-6 max-w-[1440px] w-full mx-auto space-y-6">
+<!-- Breadcrumbs and Editorial Sub-bar -->
+<section class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-4 border-b border-hairline">
+<div>
+<div class="flex items-center gap-1.5 font-mono text-[11px] text-slate-mute uppercase tracking-wider mb-1">
+<span>Workspace</span>
+<span class="text-dim-veil">/</span>
+<span class="text-foam-ink">Autonomous Operations</span>
+</div>
+<h1 class="text-xl font-semibold tracking-tight text-foam-ink">Studio Overview</h1>
+</div>
+<div class="flex flex-wrap items-center gap-3 font-mono text-[11px]">
+<div class="flex items-center gap-2 px-2.5 py-1 rounded bg-ash-rise border border-hairline text-slate-mute">
+<span class="w-1.5 h-1.5 rounded-full bg-ember animate-breathing-dot"></span>
+<span class="text-foam-ink">Listening to 14 active keywords</span>
+</div>
+<div class="flex items-center gap-1 text-slate-mute">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span class="font-mono text-foam-ink uppercase">THU, 24 OCT 2024 — 09:42 UTC</span>
+</div>
+</div>
+</section>
+<!-- Metric Cards Grid (Precision Instrument Gauges) -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Metric 1: Posts Today -->
+<div class="p-4 rounded bg-graphite-panel border border-hairline flex flex-col justify-between">
+<div class="flex items-center justify-between font-mono text-[11px] text-slate-mute uppercase tracking-wider">
+<span>Posts Today</span>
+<span class="text-dim-veil">+4 queued</span>
+</div>
+<div class="my-3 flex items-baseline gap-2">
+<span class="font-mono text-3xl font-semibold text-foam-ink tracking-tight">18</span>
+<span class="font-mono text-xs text-slate-mute">/ 25 daily limit</span>
+</div>
+<div class="space-y-1.5">
+<div class="w-full h-1 bg-ash-rise rounded-full overflow-hidden">
+<div class="h-full bg-foam-ink w-[72%]"></div>
+</div>
+<div class="flex justify-between font-mono text-[10px] text-slate-mute">
+<span>72% of ceiling</span>
+<span>7 available</span>
+</div>
+</div>
+</div>
+<!-- Metric 2: Replies Sent -->
+<div class="p-4 rounded bg-graphite-panel border border-hairline flex flex-col justify-between">
+<div class="flex items-center justify-between font-mono text-[11px] text-slate-mute uppercase tracking-wider">
+<span>Replies Sent</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-healthy-lime/10 text-healthy-lime font-mono">98.6% DELIVERED</span>
+</div>
+<div class="my-3 flex items-baseline gap-2">
+<span class="font-mono text-3xl font-semibold text-foam-ink tracking-tight">142</span>
+<span class="font-mono text-xs text-slate-mute">dispatches</span>
+</div>
+<div class="flex items-center gap-1.5 font-mono text-[10px] text-slate-mute">
+<span class="material-symbols-outlined text-[14px] text-healthy-lime">arrow_upward</span>
+<span class="text-healthy-lime font-medium">+26.4%</span>
+<span>vs. trailing 24h</span>
+</div>
+</div>
+<!-- Metric 3: Keyword Matches -->
+<div class="p-4 rounded bg-graphite-panel border border-hairline flex flex-col justify-between">
+<div class="flex items-center justify-between font-mono text-[11px] text-slate-mute uppercase tracking-wider">
+<span>Keyword Matches</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-ash-rise text-slate-mute font-mono">24h Cycle</span>
+</div>
+<div class="my-3 flex items-baseline gap-2">
+<span class="font-mono text-3xl font-semibold text-foam-ink tracking-tight">389</span>
+<span class="font-mono text-xs text-slate-mute">scanned</span>
+</div>
+<div class="flex items-center justify-between font-mono text-[10px] text-slate-mute">
+<span>Review Queue</span>
+<span class="text-caution-amber font-medium">34 pending triage</span>
+</div>
+</div>
+<!-- Metric 4: Threads Graph API Quota -->
+<div class="p-4 rounded bg-graphite-panel border border-hairline flex flex-col justify-between">
+<div class="flex items-center justify-between font-mono text-[11px] text-slate-mute uppercase tracking-wider">
+<span>Threads Graph API</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-caution-amber/10 text-caution-amber font-mono">TIER 1 QUOTA</span>
+</div>
+<div class="my-3 flex items-baseline justify-between">
+<div class="flex items-baseline gap-1.5">
+<span class="font-mono text-3xl font-semibold text-caution-amber tracking-tight">217</span>
+<span class="font-mono text-xs text-slate-mute">/ 250</span>
+</div>
+<span class="font-mono text-xs text-caution-amber font-medium">86.8%</span>
+</div>
+<div class="space-y-1.5">
+<div class="w-full h-1 bg-ash-rise rounded-full overflow-hidden">
+<div class="h-full bg-caution-amber w-[86.8%]"></div>
+</div>
+<div class="flex justify-between font-mono text-[10px] text-slate-mute">
+<span>Window reset in</span>
+<span class="font-mono text-foam-ink">00:43:12</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Layout Split: 65% / 35% Grid -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Column 1: Live Activity Feed (65% -> 8 of 12 cols) -->
+<div class="lg:col-span-8 rounded bg-graphite-panel border border-hairline overflow-hidden flex flex-col">
+<!-- Feed Header -->
+<div class="px-4 py-3 border-b border-hairline flex items-center justify-between bg-graphite-panel">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-ember">stream</span>
+<h2 class="text-sm font-semibold text-foam-ink tracking-tight uppercase">Live Activity Feed</h2>
+</div>
+<div class="flex items-center gap-2 font-mono text-[10px] text-slate-mute">
+<span class="w-1.5 h-1.5 rounded-full bg-healthy-lime"></span>
+<span>STREAM_INGEST_OK</span>
+</div>
+</div>
+<!-- Activity Rows -->
+<div class="divide-y divide-hairline">
+<!-- Item 1: Published Thread -->
+<article class="p-4 hover:bg-ash-rise/40 transition-colors flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 font-mono text-[11px] text-slate-mute">
+<span class="text-foam-ink font-medium">THREAD DISPATCH</span>
+<span class="text-dim-veil">·</span>
+<span>#th-98421</span>
+<span class="text-dim-veil">·</span>
+<span>14m ago</span>
+</div>
+<span class="px-2 py-0.5 rounded font-mono text-[10px] bg-healthy-lime/10 text-healthy-lime border border-healthy-lime/20">PUBLISHED</span>
+</div>
+<p class="text-[13px] text-foam-ink font-normal leading-normal">
+                The nuance in modular UI state management is often missed. Isolating terminal side-effects from domain logic preserves deterministic event feeds under load.
+              </p>
+<div class="flex items-center justify-between pt-1 font-mono text-[11px] text-slate-mute">
+<div class="flex items-center gap-4">
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">favorite</span>
+<span class="text-foam-ink">84</span>
+</span>
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">format_quote</span>
+<span class="text-foam-ink">19</span>
+</span>
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">bar_chart</span>
+<span class="text-foam-ink">2.4k views</span>
+</span>
+</div>
+<a class="inline-flex items-center gap-1 text-slate-mute hover:text-foam-ink transition-colors" href="#">
+<span>Inspect</span>
+<span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Item 2: Automated Reply -->
+<article class="p-4 hover:bg-ash-rise/40 transition-colors flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 font-mono text-[11px] text-slate-mute">
+<span class="text-foam-ink font-medium">AUTOMATED REPLY</span>
+<span class="text-dim-veil">·</span>
+<span>in reply to <span class="text-foam-ink">@dan_abramov</span></span>
+<span class="text-dim-veil">·</span>
+<span>42m ago</span>
+</div>
+<span class="px-2 py-0.5 rounded font-mono text-[10px] bg-healthy-lime/10 text-healthy-lime border border-healthy-lime/20">REPLIED</span>
+</div>
+<div class="p-3 rounded bg-ash-rise border border-hairline space-y-1">
+<div class="font-mono text-[10px] text-dim-veil uppercase tracking-wide">Thread context: "Server Components latency in edge runtimes"</div>
+<p class="text-[12px] text-foam-ink">
+                  "Edge execution eliminates TCP handshakes at origin, but caching dehydrated fiber trees requires rigid cache invalidation keys rather than optimistic revalidation."
+                </p>
+</div>
+<div class="flex items-center justify-between pt-1 font-mono text-[11px] text-slate-mute">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-healthy-lime">check_circle</span>
+<span>Trigger rule: RSC Latency Strategy</span>
+</div>
+<span>Latency: 410ms</span>
+</div>
+</article>
+<!-- Item 3: Keyword Scanner Match Pending Review -->
+<article class="p-4 hover:bg-ash-rise/40 transition-colors flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 font-mono text-[11px] text-slate-mute">
+<span class="text-foam-ink font-medium">KEYWORD SCANNER</span>
+<span class="text-dim-veil">·</span>
+<span>match: <span class="text-ember font-mono">"design systems"</span></span>
+<span class="text-dim-veil">·</span>
+<span>1h 08m ago</span>
+</div>
+<span class="px-2 py-0.5 rounded font-mono text-[10px] bg-caution-amber/10 text-caution-amber border border-caution-amber/20">QUEUED FOR REVIEW</span>
+</div>
+<p class="text-[13px] text-foam-ink">
+<span class="font-mono text-slate-mute">@sarah_ui:</span> How do you manage tactile feedback styling tokens without creating bloated CSS bundle output across microfrontends?
+              </p>
+<div class="flex items-center justify-between pt-2 border-t border-hairline mt-1">
+<span class="font-mono text-[11px] text-slate-mute">Confidence: 94.2% semantic relevance</span>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 rounded bg-ash-rise hover:bg-ash-rise/80 text-slate-mute hover:text-foam-ink font-mono text-[11px] border border-hairline transition-colors" type="button">Dismiss</button>
+<button class="px-3 py-1 rounded bg-ember text-umbra-canvas font-semibold text-[11px] hover:opacity-95 transition-opacity" type="button">Review Draft</button>
+</div>
+</div>
+</article>
+<!-- Item 4: Scheduled Sequence Deployed -->
+<article class="p-4 hover:bg-ash-rise/40 transition-colors flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 font-mono text-[11px] text-slate-mute">
+<span class="text-foam-ink font-medium">SCHEDULED SEQUENCE</span>
+<span class="text-dim-veil">·</span>
+<span>3-part thread deployment</span>
+<span class="text-dim-veil">·</span>
+<span>2h 15m ago</span>
+</div>
+<span class="px-2 py-0.5 rounded font-mono text-[10px] bg-healthy-lime/10 text-healthy-lime border border-healthy-lime/20">COMPLETE</span>
+</div>
+<p class="text-[13px] text-foam-ink leading-normal">
+                Editorial cadence benchmark breakdown: Thread deployed with 45-second stagger delay to avoid heuristic rate flagging. Zero API throttling warnings registered.
+              </p>
+<div class="flex items-center gap-4 pt-1 font-mono text-[11px] text-slate-mute">
+<span>Posts: <span class="text-foam-ink">3 / 3</span></span>
+<span class="text-dim-veil">·</span>
+<span>Cumulative impressions: <span class="text-foam-ink">5,190</span></span>
+<span class="text-dim-veil">·</span>
+<span class="text-healthy-lime">Zero retries</span>
+</div>
+</article>
+</div>
+</div>
+<!-- Column 2: Right Control Panel (35% -> 4 of 12 cols) -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Instant Dispatch Quick Action Box -->
+<div class="p-4 rounded bg-graphite-panel border border-hairline space-y-3">
+<div class="flex items-center justify-between">
+<span class="font-mono text-[11px] uppercase tracking-wider text-slate-mute">Instant Dispatch</span>
+<span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-ash-rise text-slate-mute border border-hairline">⌘N</span>
+</div>
+<p class="text-[12px] text-foam-ink leading-relaxed">
+              Craft thread, configure auto-delay staggering, and dispatch to production network.
+            </p>
+<button class="w-full flex items-center justify-center gap-2 py-2.5 rounded bg-ember text-umbra-canvas font-semibold text-[12px] hover:opacity-95 active:scale-[0.99] transition-all" type="button">
+<span class="material-symbols-outlined text-[16px] leading-none">edit_note</span>
+<span>Open Studio Composer</span>
+</button>
+</div>
+<!-- Next Scheduled Posts Widget -->
+<div class="rounded bg-graphite-panel border border-hairline overflow-hidden flex flex-col">
+<div class="px-4 py-3 border-b border-hairline flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-slate-mute">schedule</span>
+<h3 class="text-xs font-semibold uppercase tracking-wider text-foam-ink">Next Scheduled Posts</h3>
+</div>
+<span class="font-mono text-[10px] text-slate-mute">3 Queued</span>
+</div>
+<div class="divide-y divide-hairline">
+<!-- Scheduled Item 1 -->
+<div class="p-3.5 hover:bg-ash-rise/40 transition-colors space-y-1.5">
+<div class="flex items-center justify-between font-mono text-[10px]">
+<span class="text-ember font-medium tracking-wide">11:30 UTC (IN 1H 48M)</span>
+<span class="text-slate-mute">Thread (1/3)</span>
+</div>
+<p class="text-[12px] text-foam-ink line-clamp-2">
+                  Why editorial density outperforms whitespace inflation in B2B tools.
+                </p>
+<div class="flex items-center gap-1 font-mono text-[10px] text-dim-veil pt-0.5">
+<span class="material-symbols-outlined text-[12px]">repeat</span>
+<span>Auto-quote ON</span>
+</div>
+</div>
+<!-- Scheduled Item 2 -->
+<div class="p-3.5 hover:bg-ash-rise/40 transition-colors space-y-1.5">
+<div class="flex items-center justify-between font-mono text-[10px]">
+<span class="text-foam-ink font-medium tracking-wide">14:15 UTC (IN 4H 33M)</span>
+<span class="text-slate-mute">Media Post</span>
+</div>
+<p class="text-[12px] text-foam-ink line-clamp-2">
+                  Five design tokens that define tactile software feeling.
+                </p>
+<div class="flex items-center gap-1 font-mono text-[10px] text-dim-veil pt-0.5">
+<span class="material-symbols-outlined text-[12px]">attachment</span>
+<span>2 images attached</span>
+</div>
+</div>
+<!-- Scheduled Item 3 -->
+<div class="p-3.5 hover:bg-ash-rise/40 transition-colors space-y-1.5">
+<div class="flex items-center justify-between font-mono text-[10px]">
+<span class="text-foam-ink font-medium tracking-wide">18:00 UTC (IN 8H 18M)</span>
+<span class="text-slate-mute">Single Post</span>
+</div>
+<p class="text-[12px] text-foam-ink line-clamp-2">
+                  Evening recap: community questions on token architecture.
+                </p>
+<div class="flex items-center gap-1 font-mono text-[10px] text-dim-veil pt-0.5">
+<span class="material-symbols-outlined text-[12px]">tag</span>
+<span>#DesignSystems</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Monitored Vectors Tag List Widget -->
+<div class="p-4 rounded bg-graphite-panel border border-hairline space-y-3">
+<div class="flex items-center justify-between border-b border-hairline pb-2.5">
+<span class="font-mono text-[11px] uppercase tracking-wider text-slate-mute">Monitored Vectors</span>
+<span class="font-mono text-[10px] text-healthy-lime flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-healthy-lime animate-breathing-dot"></span>
+<span>STREAM_STABLE</span>
+</span>
+</div>
+<div class="flex flex-wrap gap-1.5 pt-1">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-ash-rise text-foam-ink font-mono text-[11px] border border-hairline">
+<span class="text-ember font-bold">#</span>design systems
+              </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-ash-rise text-foam-ink font-mono text-[11px] border border-hairline">
+<span class="text-ember font-bold">#</span>rsc performance
+              </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-ash-rise text-foam-ink font-mono text-[11px] border border-hairline">
+<span class="text-ember font-bold">#</span>state machines
+              </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-ash-rise text-foam-ink font-mono text-[11px] border border-hairline">
+<span class="text-ember font-bold">#</span>threads api
+              </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-ash-rise text-slate-mute font-mono text-[11px] border border-hairline hover:text-foam-ink cursor-pointer transition-colors">
+                +10 more
+              </span>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<script>
+    // Global shortcut handler for Cmd+N / Ctrl+N to trigger composition
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        const composeBtn = document.querySelector('button:has(.material-symbols-outlined)');
+        if (composeBtn) composeBtn.focus();
+      }
+    });
+  </script>
+</body></html>

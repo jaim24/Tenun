@@ -1,0 +1,39 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+/build
+
+# production
+/tenun.db
+/tenun.db-journal
+prisma/dev.db*
+prisma/*.db-journal
+
+# local uploads
+/public/uploads/*
+
+# misc
+.DS_Store
+*.pem
+
+# env
+.env
+.env*.local
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+# logs
+dev-server.log
+*.log

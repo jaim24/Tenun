@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tenun — Reply Queue</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "umbra-canvas": "#0D0D0E",
+            "graphite-panel": "#161618",
+            "ash-rise": "#1E1E21",
+            "foam-ink": "#F4F4F5",
+            "slate-mute": "#A1A1AA",
+            "dim-veil": "#70707A",
+            "ember": "#E8633C",
+            "healthy-lime": "#4ADE80",
+            "caution-amber": "#FBBF24",
+            "coral-alert": "#F87171",
+            "hairline": "rgba(244, 244, 245, 0.08)",
+            "hairline-subtle": "rgba(244, 244, 245, 0.04)"
+          },
+          fontFamily: {
+            sans: ["Geist", "sans-serif"],
+            mono: ["Geist Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+<style id="tenun-typography">
+  .font-headline-xl{font-family:"Geist",sans-serif;font-size:2.25rem;line-height:2.75rem;font-weight:600;letter-spacing:-0.03em}
+  .font-headline-lg{font-family:"Geist",sans-serif;font-size:1.5rem;line-height:2rem;font-weight:500;letter-spacing:-0.02em}
+  .font-headline-md{font-family:"Geist",sans-serif;font-size:1.125rem;line-height:1.5rem;font-weight:500;letter-spacing:-0.015em}
+  .font-body-editorial{font-family:"Geist",sans-serif;font-size:0.9375rem;line-height:1.5rem;letter-spacing:-0.005em}
+  .font-body-dense{font-family:"Geist",sans-serif;font-size:0.8125rem;line-height:1.25rem}
+  .font-label-ui{font-family:"Geist",sans-serif;font-size:0.75rem;line-height:1rem;font-weight:500;letter-spacing:0.02em}
+  .font-label-mono{font-family:"Geist Mono",monospace;font-size:0.75rem;line-height:1rem;font-weight:400;letter-spacing:0}
+  .text-data-metric{font-family:"Geist Mono",monospace;font-size:1.125rem;line-height:1.25rem;font-weight:500;letter-spacing:-0.01em}
+  .text-data-mono-xs{font-family:"Geist Mono",monospace;font-size:0.6875rem;line-height:0.875rem;font-weight:400;letter-spacing:0.02em}
+</style>
+<style>
+    body {
+      background-color: #0D0D0E;
+      color: #F4F4F5;
+      font-family: 'Geist', sans-serif;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    @keyframes breathing {
+      0%, 100% { opacity: 0.35; transform: scale(0.96); }
+      50% { opacity: 1; transform: scale(1.04); }
+    }
+    .animate-breathing-dot {
+      animation: breathing 2.4s ease-in-out infinite;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0D0D0E;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1E1E21;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #70707A;
+    }
+  </style>
+<meta content="web_dashboard" name="shell-type"/></head>
+<body class="bg-umbra-canvas text-foam-ink min-h-screen selection:bg-ember selection:text-umbra-canvas font-sans text-[13px] leading-relaxed">
+<!-- Persistent Left Sidebar (Fixed 240px) -->
+<aside class="fixed left-0 top-0 bottom-0 w-60 bg-graphite-panel border-r border-hairline z-50 flex flex-col justify-between select-none">
+<div class="flex flex-col">
+<!-- App Brand Header -->
+<div class="h-14 px-4 flex items-center justify-between border-b border-hairline">
+<div class="flex items-center gap-2.5">
+<img alt="Tenun Logo" class="w-7 h-7 rounded-md object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XQpQe1pxUPZEKDdIxJ2scm11TzW2CJEi9uKTiBYK-HBklGlO-Gu27J2iaeM05JS3FHzNp0fbPKmvNUfN84Y5bLvtFK3p9--ZIqx6X0Ujk8VQo_aOiKTZZU55swKxGH-xLNy4-14DdHmRqeHG5aHjwdvCuQXDYidd_yRKMTVaYSgtiNZd0gVO9lLVdYxLjnVRoh49TpddWxAa6ziaCu6PoB0ygvzFV3zqJ63_QkyMBFxZZfVLWd01o5Zi4"/>
+<span class="font-mono text-sm font-semibold tracking-tight text-foam-ink uppercase">Tenun</span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-ash-rise border border-hairline">
+<span class="w-1.5 h-1.5 rounded-full bg-ember animate-breathing-dot"></span>
+<span class="font-mono text-[10px] tracking-wider text-slate-mute uppercase">Live</span>
+</div>
+</div>
+<!-- Rate Quota Quick Bar -->
+<div class="px-4 py-3 border-b border-hairline bg-graphite-panel">
+<div class="flex items-center justify-between font-mono text-[11px] mb-1.5">
+<span class="text-slate-mute uppercase tracking-wider">Rate Quota</span>
+<span class="text-foam-ink font-medium">217 <span class="text-dim-veil">/ 250</span></span>
+</div>
+<div class="w-full h-1 bg-ash-rise rounded-full overflow-hidden">
+<div class="h-full bg-caution-amber w-[86.8%]"></div>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col p-2 space-y-0.5">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-foam-ink bg-ash-rise border-l-2 border-ember font-medium transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px] text-foam-ink">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">edit_note</span>
+<span>Compose Post</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]">forum</span>
+<span>Reply Queue</span>
+</div>
+<span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-ash-rise text-slate-mute border border-hairline">14</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">manage_search</span>
+<span>Keyword Search</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span>Settings / Accounts</span>
+</a>
+</nav>
+</div>
+<!-- Bottom User Profile Card -->
+<div class="p-3 border-t border-hairline bg-graphite-panel">
+<div class="flex items-center gap-2.5 px-2 py-1.5 rounded hover:bg-ash-rise/60 transition-colors">
+<img alt="Bramantyo" class="w-8 h-8 rounded-full object-cover ring-1 ring-hairline" src="https://lh3.googleusercontent.com/aida/AEtjO1XujctwhPj1DD5tMxpxS6HMOi_Sw_--p6vjBf7jFVZ-bagoeSHmyoEkS94abVmyrIRMS4CrP2z13hk-QFtR2CiBegs4ZaZITOaWf996lTHRryMcB3YxZaZ7OBt4aNShPAsKrBGjH-lxoojEMyxTO0myStgDKl-L3rMvEJIvhlD8Sea0hmGg50va7us2zCG3PGpXKANkbjsjrw-v6FMIlPzotd6ewVvtyKPXm-T9aDJxTm8YfKfbaGT0KWRx"/>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="text-[12px] font-medium text-foam-ink truncate leading-tight">Bramantyo</span>
+<span class="font-mono text-[10px] text-slate-mute truncate">@bramantyo.threads</span>
+</div>
+<button class="text-slate-mute hover:text-foam-ink transition-colors p-1" title="Sign out" type="button">
+<span class="material-symbols-outlined text-[16px] leading-none">logout</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrapper (offset by sidebar width 240px) -->
+<div class="pl-60 flex flex-col min-h-screen">
+<!-- Persistent Top Bar (h-14) -->
+<header class="h-14 bg-graphite-panel/90 backdrop-blur-md border-b border-hairline sticky top-0 z-40 px-6 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<!-- Live Stream Telemetry -->
+<div class="flex items-center gap-2 font-mono text-[11px] text-slate-mute">
+<span class="w-2 h-2 rounded-full bg-ember animate-breathing-dot"></span>
+<span class="text-foam-ink font-medium tracking-wide">LIVE STREAM_STABLE</span>
+</div>
+<span class="h-3 w-px bg-hairline"></span>
+<div class="flex items-center gap-1.5 font-mono text-[11px] text-slate-mute">
+<span>LATENCY:</span>
+<span class="text-healthy-lime font-mono">28ms</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<!-- Quick Action Trigger -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-ember text-umbra-canvas font-semibold text-[12px] hover:opacity-95 active:scale-[0.99] transition-all" type="button">
+<span class="material-symbols-outlined text-[16px] leading-none">add</span>
+<span>New Broadcast</span>
+</button>
+<span class="h-3 w-px bg-hairline"></span>
+<button class="p-1.5 text-slate-mute hover:text-foam-ink transition-colors" title="Notifications" type="button">
+<span class="material-symbols-outlined text-[18px] leading-none">notifications</span>
+</button>
+<img alt="Bramantyo" class="w-7 h-7 rounded-full object-cover ring-1 ring-hairline" src="https://lh3.googleusercontent.com/aida/AEtjO1XujctwhPj1DD5tMxpxS6HMOi_Sw_--p6vjBf7jFVZ-bagoeSHmyoEkS94abVmyrIRMS4CrP2z13hk-QFtR2CiBegs4ZaZITOaWf996lTHRryMcB3YxZaZ7OBt4aNShPAsKrBGjH-lxoojEMyxTO0myStgDKl-L3rMvEJIvhlD8Sea0hmGg50va7us2zCG3PGpXKANkbjsjrw-v6FMIlPzotd6ewVvtyKPXm-T9aDJxTm8YfKfbaGT0KWRx"/>
+</div>
+</header>
+<!-- Dashboard Content Canvas -->
+<main class="flex-1 p-6 max-w-[1440px] w-full mx-auto space-y-6"><div class="flex flex-col w-full">
+<div class="flex flex-col gap-6">
+<!-- Top Telemetry & Title Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-hairline">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-2">
+<span class="font-label-mono text-label-mono text-dim-veil tracking-wider uppercase">Workspace</span>
+<span class="text-dim-veil font-label-mono text-label-mono">/</span>
+<span class="font-label-mono text-label-mono text-slate-mute tracking-wider uppercase">Discourse Engine</span>
+</div>
+<div class="flex items-center gap-3">
+<h1 class="font-headline-lg text-headline-lg text-foam-ink tracking-tight font-semibold">Reply Approval Inbox</h1>
+<span class="px-2 py-0.5 rounded-full bg-ash-rise text-slate-mute font-label-mono text-data-mono-xs border border-hairline">v2.4-stream</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-4 text-slate-mute">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded bg-graphite-panel border border-hairline">
+<span class="font-data-metric text-data-metric text-foam-ink font-mono font-medium">14</span>
+<span class="font-label-mono text-label-mono text-slate-mute">Drafts Pending Review</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded bg-graphite-panel border border-hairline">
+<span class="w-1.5 h-1.5 rounded-full bg-ember animate-breathing-dot"></span>
+<span class="font-label-mono text-label-mono text-slate-mute">Listening on</span>
+<span class="font-data-metric text-data-metric text-foam-ink font-mono font-medium">14</span>
+<span class="font-label-mono text-label-mono text-slate-mute">keywords</span>
+</div>
+</div>
+</div>
+<!-- Triage Ribbon & Controls -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 p-2 bg-graphite-panel rounded-lg border border-hairline">
+<!-- Tabs -->
+<div class="flex items-center gap-1 overflow-x-auto select-none">
+<button class="px-3 py-1.5 rounded bg-ash-rise text-foam-ink font-label-ui text-label-ui flex items-center gap-2 border-l border-ember" type="button">
+<span>All Pending</span>
+<span class="font-label-mono text-data-mono-xs px-1.5 py-0.5 rounded bg-umbra-canvas text-slate-mute">14</span>
+</button>
+<button class="px-3 py-1.5 rounded hover:bg-ash-rise/50 text-slate-mute hover:text-foam-ink transition-colors font-label-ui text-label-ui flex items-center gap-2" type="button">
+<span>High Confidence &gt;90%</span>
+<span class="font-label-mono text-data-mono-xs px-1.5 py-0.5 rounded bg-ash-rise text-healthy-lime">8</span>
+</button>
+<button class="px-3 py-1.5 rounded hover:bg-ash-rise/50 text-slate-mute hover:text-foam-ink transition-colors font-label-ui text-label-ui flex items-center gap-2" type="button">
+<span>Keyword Match</span>
+<span class="font-label-mono text-data-mono-xs px-1.5 py-0.5 rounded bg-ash-rise text-slate-mute">4</span>
+</button>
+<button class="px-3 py-1.5 rounded hover:bg-ash-rise/50 text-slate-mute hover:text-foam-ink transition-colors font-label-ui text-label-ui flex items-center gap-2" type="button">
+<span>Mentions</span>
+<span class="font-label-mono text-data-mono-xs px-1.5 py-0.5 rounded bg-ash-rise text-slate-mute">2</span>
+</button>
+</div>
+<!-- Quick Triage Actions -->
+<div class="flex items-center gap-2 self-end lg:self-auto">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-hairline text-slate-mute hover:text-foam-ink hover:bg-ash-rise font-label-ui text-label-ui transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">filter_alt_off</span>
+<span>Auto-skip low confidence (&lt;60%)</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-ash-rise text-foam-ink hover:bg-surface-container-highest border border-hairline font-label-ui text-label-ui transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px] text-ember">playlist_add_check</span>
+<span>Batch Approve Selected (3)</span>
+</button>
+</div>
+</div>
+<!-- Main Workspace Split -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+<!-- Feed Section: 8 cols on xl -->
+<div class="xl:col-span-8 flex flex-col gap-4">
+<!-- Card 1 (Detailed Expanded Card) -->
+<article class="flex flex-col bg-graphite-panel rounded-lg border border-hairline overflow-hidden transition-all hover:border-hairline/60">
+<!-- Card Header & Metadata -->
+<div class="p-4 bg-ash-rise/30 flex flex-wrap items-center justify-between gap-3 border-b border-hairline">
+<div class="flex items-center gap-3">
+<input checked="" class="w-4 h-4 rounded bg-ash-rise border-hairline text-ember focus:ring-0 focus:ring-offset-0 cursor-pointer" type="checkbox"/>
+<div class="relative">
+<img class="w-8 h-8 rounded-full object-cover ring-1 ring-hairline" data-alt="Monochrome avatar photo of software engineer in dark studio lighting looking directly at camera with neutral expression, high technical polish" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwAGjYw6jCyRP8ue7mibqCQcLsoXp8Ep2jSL-V6F1OnF6v8uUDImn6SDD2PTXlisG_EOrRHwdJeJ_UG0EoF7ZmKE24GXLahufC9O8x2MNdjEsS2kdg_prxpz1JqC6lOdcAGrsUrSLyA6i9hzzRM-K1q2uuXP-6VfQYtxkPiie6UhB8KAjejf9F_TqIIpdOs6yiv1-LAYk01wGVqvU2erY10UP3XOBGWN--Kvxz_1Uofqvh5My7Sqr98w"/>
+<span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-umbra-canvas rounded-full flex items-center justify-center text-[9px] font-mono text-slate-mute ring-1 ring-hairline" title="Threads account">@</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-ui text-foam-ink font-semibold tracking-tight">Dan Abramov</span>
+<span class="font-label-mono text-label-mono text-dim-veil font-mono">@dan_abramov</span>
+</div>
+<span class="font-label-mono text-data-mono-xs text-dim-veil font-mono">Threads Direct Network</span>
+</div>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="font-label-mono text-data-mono-xs text-dim-veil font-mono">42m ago</span>
+<span class="h-3 w-px bg-hairline"></span>
+<span class="font-label-mono text-data-mono-xs px-2 py-0.5 rounded bg-ash-rise text-slate-mute border border-hairline">
+                Keyword: <strong class="text-foam-ink font-normal font-sans ml-0.5">"Server Components"</strong>
+</span>
+<span class="font-label-mono text-data-mono-xs px-2 py-0.5 rounded bg-healthy-lime/10 text-healthy-lime border border-healthy-lime/20 font-medium">
+                96.4% CONFIDENCE
+              </span>
+</div>
+</div>
+<!-- Body split: Target vs Suggested -->
+<div class="p-5 flex flex-col gap-4">
+<!-- Quoted Original Post -->
+<div class="flex flex-col gap-1.5 p-3.5 rounded bg-umbra-canvas/60 border-l-2 border-slate-mute/40">
+<div class="flex items-center justify-between">
+<span class="font-label-mono text-data-mono-xs text-dim-veil uppercase tracking-wider">Target Post Snippet</span>
+<span class="material-symbols-outlined text-[14px] text-dim-veil">format_quote</span>
+</div>
+<p class="font-body-editorial text-body-editorial text-slate-mute leading-relaxed">
+                The nuance in modular UI state management is often missed. Isolating terminal side-effects from domain logic preserves deterministic event feeds under load.
+              </p>
+</div>
+<!-- Suggested Response Editor -->
+<div class="flex flex-col gap-2 p-4 rounded bg-ash-rise border border-hairline">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-label-mono text-data-mono-xs uppercase text-ember font-medium tracking-wider flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-ember"></span>
+                    Suggested Draft Reply
+                  </span>
+<span class="font-label-mono text-data-mono-xs text-dim-veil">| 142 Chars</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-dim-veil hover:text-foam-ink p-1 rounded hover:bg-surface-container transition-colors" title="Copy text" type="button">
+<span class="material-symbols-outlined text-[15px]">content_copy</span>
+</button>
+<button class="text-dim-veil hover:text-foam-ink p-1 rounded hover:bg-surface-container transition-colors" title="Format preview" type="button">
+<span class="material-symbols-outlined text-[15px]">visibility</span>
+</button>
+</div>
+</div>
+<textarea class="w-full bg-transparent border-0 text-foam-ink font-body-editorial text-body-editorial focus:ring-0 p-0 resize-none leading-relaxed selection:bg-ember selection:text-umbra-canvas" rows="3" spellcheck="false">Setuju banget dengan titik ini. Dulu saya di sisi sebaliknya sampai datanya bicara lain.</textarea>
+<div class="pt-2 border-t border-hairline flex flex-wrap items-center justify-between gap-2 font-label-mono text-data-mono-xs text-dim-veil">
+<div class="flex items-center gap-3">
+<span>RULE: <span class="text-slate-mute">RSC Latency Strategy</span></span>
+<span>MODEL: <span class="text-slate-mute">Synth-v2</span></span>
+<span>LATENCY: <span class="text-healthy-lime font-mono">410ms</span></span>
+</div>
+<span class="text-slate-mute font-mono">Press ⌘+Enter to dispatch</span>
+</div>
+</div>
+</div>
+<!-- Bottom Action Bar -->
+<div class="px-5 py-3 bg-graphite-panel border-t border-hairline flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-transparent border border-hairline text-slate-mute hover:text-foam-ink hover:bg-ash-rise font-label-ui text-label-ui transition-all" type="button">
+<span class="material-symbols-outlined text-[15px]">edit</span>
+<span>Edit Inline</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-transparent border border-hairline text-slate-mute hover:text-foam-ink hover:bg-ash-rise font-label-ui text-label-ui transition-all" type="button">
+<span class="material-symbols-outlined text-[15px]">autorenew</span>
+<span>Reroll Suggestion</span>
+</button>
+</div>
+<div class="flex items-center gap-2.5">
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded bg-transparent border border-hairline text-slate-mute hover:text-coral-alert hover:bg-coral-alert/10 font-label-ui text-label-ui transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">close</span>
+<span>Skip / Dismiss</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded bg-ember text-umbra-canvas font-label-ui text-label-ui font-semibold hover:opacity-95 active:translate-y-px transition-all" type="button">
+<span class="material-symbols-outlined text-[16px] leading-none">send</span>
+<span>Approve &amp; Queue Dispatch</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 2 (Standard Queued Card) -->
+<article class="flex flex-col bg-graphite-panel rounded-lg border border-hairline overflow-hidden transition-all hover:border-hairline/60">
+<div class="p-4 bg-ash-rise/30 flex flex-wrap items-center justify-between gap-3 border-b border-hairline">
+<div class="flex items-center gap-3">
+<input class="w-4 h-4 rounded bg-ash-rise border-hairline text-ember focus:ring-0 focus:ring-offset-0 cursor-pointer" type="checkbox"/>
+<div class="relative">
+<img class="w-8 h-8 rounded-full object-cover ring-1 ring-hairline" data-alt="Editorial headshot of female design systems architect in grayscale tone wearing architectural minimal glasses, crisp focus, dark charcoal backdrop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIUrMCHsRKQ6hK5uPYcgtAotmeH7XXZYAN1mSXfmHK-gLGgj0jzIeGA-g14XAmO2_udMFYU1v6sBwQxNqN8VfaQS0Itu64Ey1CIywIYVjqPwldAqqWljrgs1xeVNRojPYxv6VU2vpMpQutBrPtMHhXsIuCTiZUBvToK4vBGGOGtjUXA4wZBnkyERt_qlRPAH1rd7EFECjHEpr92NoGnLVhPnWL_ruUt2oLj28Xjyrc5qZkvD3edfTc7g"/>
+<span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-umbra-canvas rounded-full flex items-center justify-center text-[9px] font-mono text-slate-mute ring-1 ring-hairline">@</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-ui text-foam-ink font-semibold tracking-tight">Sarah Chen</span>
+<span class="font-label-mono text-label-mono text-dim-veil font-mono">@sarah_ui</span>
+</div>
+<span class="font-label-mono text-data-mono-xs text-dim-veil font-mono">Verified Specialist</span>
+</div>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="font-label-mono text-data-mono-xs text-dim-veil font-mono">1h 08m ago</span>
+<span class="h-3 w-px bg-hairline"></span>
+<span class="font-label-mono text-data-mono-xs px-2 py-0.5 rounded bg-ash-rise text-slate-mute border border-hairline">
+                Keyword: <strong class="text-foam-ink font-normal font-sans ml-0.5">"design systems"</strong>
+</span>
+<span class="font-label-mono text-data-mono-xs px-2 py-0.5 rounded bg-healthy-lime/10 text-healthy-lime border border-healthy-lime/20 font-medium">
+                94.2% CONFIDENCE
+              </span>
+</div>
+</div>
+<div class="p-5 flex flex-col gap-3">
+<div class="p-3 rounded bg-umbra-canvas/60 border-l-2 border-slate-mute/40">
+<p class="font-body-editorial text-body-editorial text-slate-mute leading-relaxed">
+                "How do you manage tactile feedback styling tokens without creating bloated CSS bundle output across microfrontends?"
+              </p>
+</div>
+<div class="p-3.5 rounded bg-ash-rise/70 border border-hairline flex flex-col gap-1.5">
+<span class="font-label-mono text-data-mono-xs text-dim-veil uppercase tracking-wider">Suggested Reply</span>
+<p class="font-body-editorial text-body-editorial text-foam-ink leading-relaxed">
+                Compile design tokens into zero-runtime atomic utility classes at build-time with CSS variable contracts. Keep variant permutations strictly collocated.
+              </p>
+</div>
+</div>
+<div class="px-5 py-3 bg-graphite-panel border-t border-hairline flex items-center justify-between">
+<span class="font-label-mono text-data-mono-xs text-dim-veil">RULE: Style Synthetics • 340ms</span>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded bg-transparent border border-hairline text-slate-mute hover:text-coral-alert hover:bg-coral-alert/10 font-label-ui text-label-ui transition-colors" type="button">
+                Dismiss
+              </button>
+<button class="px-3.5 py-1.5 rounded bg-ember text-umbra-canvas font-label-ui text-label-ui font-semibold hover:opacity-95 transition-all" type="button">
+                Quick Approve
+              </button>
+</div>
+</div>
+</article>
+<!-- Card 3 (Standard Queued Card) -->
+<article class="flex flex-col bg-graphite-panel rounded-lg border border-hairline overflow-hidden transition-all hover:border-hairline/60">
+<div class="p-4 bg-ash-rise/30 flex flex-wrap items-center justify-between gap-3 border-b border-hairline">
+<div class="flex items-center gap-3">
+<input class="w-4 h-4 rounded bg-ash-rise border-hairline text-ember focus:ring-0 focus:ring-offset-0 cursor-pointer" type="checkbox"/>
+<div class="relative">
+<img class="w-8 h-8 rounded-full object-cover ring-1 ring-hairline" data-alt="Monochrome portrait of a UI software developer in graphite tone sweatshirt against dark grey concrete studio background with clean rim light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAc3EQKr2NcRpF1a7QNzwWet2813L1N6po6gl3Wip2siRkdC-YF9ALW8KVeUzJUq-NsvZrRVe6_T5uddyndMdBGsjqdKZ1nZI1Ufy1nfIVUtK_Gcbo_EQ_4IXe_rMAxQPhF01rQINb9IZQldyuglgVoZrIwh9GRSq2NkMgEv09BXfi6ERTsToKjwK7S0Vi90cdBBImOV6bZ71RvnGZiROkA774_E1dWTW8TYxNVue-GnAv0OepY-d93JQ"/>
+<span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-umbra-canvas rounded-full flex items-center justify-center text-[9px] font-mono text-slate-mute ring-1 ring-hairline">@</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-ui text-foam-ink font-semibold tracking-tight">shadcn</span>
+<span class="font-label-mono text-label-mono text-dim-veil font-mono">@shadcn</span>
+</div>
+<span class="font-label-mono text-data-mono-xs text-dim-veil font-mono">Verified Builder</span>
+</div>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="font-label-mono text-data-mono-xs text-dim-veil font-mono">2h 15m ago</span>
+<span class="h-3 w-px bg-hairline"></span>
+<span class="font-label-mono text-data-mono-xs px-2 py-0.5 rounded bg-ash-rise text-slate-mute border border-hairline">
+                Keyword: <strong class="text-foam-ink font-normal font-sans ml-0.5">"state machines"</strong>
+</span>
+<span class="font-label-mono text-data-mono-xs px-2 py-0.5 rounded bg-caution-amber/10 text-caution-amber border border-caution-amber/20 font-medium">
+                88.7% CONFIDENCE
+              </span>
+</div>
+</div>
+<div class="p-5 flex flex-col gap-3">
+<div class="p-3 rounded bg-umbra-canvas/60 border-l-2 border-slate-mute/40">
+<p class="font-body-editorial text-body-editorial text-slate-mute leading-relaxed">
+                "Deterministic state transitions make optimistic UI updates significantly easier to rollback upon network partition."
+              </p>
+</div>
+<div class="p-3.5 rounded bg-ash-rise/70 border border-hairline flex flex-col gap-1.5">
+<span class="font-label-mono text-data-mono-xs text-dim-veil uppercase tracking-wider">Suggested Reply</span>
+<p class="font-body-editorial text-body-editorial text-foam-ink leading-relaxed">
+                Decoupling the transition graph from presentation layer prevents phantom mutations during offline re-sync.
+              </p>
+</div>
+</div>
+<div class="px-5 py-3 bg-graphite-panel border-t border-hairline flex items-center justify-between">
+<span class="font-label-mono text-data-mono-xs text-dim-veil">RULE: Distributed Systems • 490ms</span>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded bg-transparent border border-hairline text-slate-mute hover:text-coral-alert hover:bg-coral-alert/10 font-label-ui text-label-ui transition-colors" type="button">
+                Dismiss
+              </button>
+<button class="px-3.5 py-1.5 rounded bg-ember text-umbra-canvas font-label-ui text-label-ui font-semibold hover:opacity-95 transition-all" type="button">
+                Quick Approve
+              </button>
+</div>
+</div>
+</article>
+</div>
+<!-- Right Column: Telemetry & Calibration Sidebar (4 cols on xl) -->
+<div class="xl:col-span-4 flex flex-col gap-4">
+<!-- Safety & Rate Shield Panel -->
+<div class="p-5 rounded-lg bg-graphite-panel border border-hairline flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-hairline pb-3">
+<span class="font-label-mono text-label-mono text-slate-mute uppercase tracking-wider">Safety &amp; Rate Shield</span>
+<span class="material-symbols-outlined text-[18px] text-healthy-lime">verified_user</span>
+</div>
+<!-- Quota Metric -->
+<div class="flex flex-col gap-2">
+<div class="flex items-baseline justify-between">
+<span class="font-label-ui text-label-ui text-foam-ink">Daily Reply Quota</span>
+<span class="font-mono text-data-metric text-foam-ink font-semibold">142 <span class="text-dim-veil text-label-mono">/ 250</span></span>
+</div>
+<!-- Segmented Progress Bar -->
+<div class="grid grid-cols-10 gap-1 w-full py-1">
+<span class="h-2 rounded-sm bg-healthy-lime"></span>
+<span class="h-2 rounded-sm bg-healthy-lime"></span>
+<span class="h-2 rounded-sm bg-healthy-lime"></span>
+<span class="h-2 rounded-sm bg-healthy-lime"></span>
+<span class="h-2 rounded-sm bg-healthy-lime"></span>
+<span class="h-2 rounded-sm bg-healthy-lime"></span>
+<span class="h-2 rounded-sm bg-ash-rise"></span>
+<span class="h-2 rounded-sm bg-ash-rise"></span>
+<span class="h-2 rounded-sm bg-ash-rise"></span>
+<span class="h-2 rounded-sm bg-ash-rise"></span>
+</div>
+<div class="flex items-center justify-between font-label-mono text-data-mono-xs text-dim-veil">
+<span>Cap: 250 threads/day</span>
+<span class="text-foam-ink">56.8% consumed</span>
+</div>
+</div>
+<!-- Velocity Telemetry -->
+<div class="pt-3 border-t border-hairline flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-mono text-data-mono-xs text-dim-veil uppercase tracking-wide">Inbox Velocity</span>
+<span class="font-label-ui text-label-ui text-slate-mute">Average response latency</span>
+</div>
+<span class="font-mono text-data-metric text-foam-ink font-semibold">4.2 <span class="text-label-mono text-dim-veil">mins</span></span>
+</div>
+</div>
+<!-- Tone Calibration Panel -->
+<div class="p-5 rounded-lg bg-graphite-panel border border-hairline flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-hairline pb-3">
+<span class="font-label-mono text-label-mono text-slate-mute uppercase tracking-wider">Tone Calibration</span>
+<span class="material-symbols-outlined text-[18px] text-ember">tune</span>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-mono text-data-mono-xs text-dim-veil uppercase tracking-wider">Active Personality Profile</span>
+<div class="p-3 rounded bg-ash-rise border border-hairline flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-ui text-foam-ink font-semibold">Architectural &amp; Concise</span>
+<span class="font-label-mono text-data-mono-xs text-slate-mute">Zero conversational filler • Technical</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-ember">lock</span>
+</div>
+</div>
+<!-- Mini Inline Radar / Metric Indicators -->
+<div class="flex flex-col gap-2 pt-1 font-label-mono text-data-mono-xs">
+<div class="flex items-center justify-between">
+<span class="text-dim-veil">Brevity Constraint</span>
+<span class="text-foam-ink font-mono">&lt; 180 chars</span>
+</div>
+<div class="w-full bg-ash-rise h-1 rounded-full overflow-hidden">
+<div class="bg-ember h-full w-[82%]"></div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="text-dim-veil">Technical Density</span>
+<span class="text-foam-ink font-mono">High (Level 4)</span>
+</div>
+<div class="w-full bg-ash-rise h-1 rounded-full overflow-hidden">
+<div class="bg-healthy-lime h-full w-[90%]"></div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="text-dim-veil">Hedging / Apologies</span>
+<span class="text-coral-alert font-mono">Strict 0%</span>
+</div>
+<div class="w-full bg-ash-rise h-1 rounded-full overflow-hidden">
+<div class="bg-coral-alert h-full w-[0%]"></div>
+</div>
+</div>
+</div>
+<!-- Monitored Keyword Health -->
+<div class="p-5 rounded-lg bg-graphite-panel border border-hairline flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-label-mono text-label-mono text-slate-mute uppercase tracking-wider">Keyword Stream Status</span>
+<span class="font-label-mono text-data-mono-xs text-healthy-lime">ALL ACTIVE</span>
+</div>
+<div class="flex flex-wrap gap-1.5 pt-1">
+<span class="px-2 py-1 rounded bg-ash-rise text-foam-ink font-label-mono text-data-mono-xs border border-hairline flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-healthy-lime"></span>
+              Server Components
+            </span>
+<span class="px-2 py-1 rounded bg-ash-rise text-foam-ink font-label-mono text-data-mono-xs border border-hairline flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-healthy-lime"></span>
+              design systems
+            </span>
+<span class="px-2 py-1 rounded bg-ash-rise text-foam-ink font-label-mono text-data-mono-xs border border-hairline flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-healthy-lime"></span>
+              state machines
+            </span>
+<span class="px-2 py-1 rounded bg-ash-rise text-slate-mute font-label-mono text-data-mono-xs border border-hairline flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-mute/60"></span>
+              +11 more
+            </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Simple micro-interaction for draft approval simulation
+  document.querySelectorAll('button:has(.material-symbols-outlined)').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      if (this.innerText.includes('Approve') || this.innerText.includes('Quick Approve')) {
+        const article = this.closest('article');
+        if (article) {
+          article.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+          article.style.opacity = '0.3';
+          article.style.pointerEvents = 'none';
+          setTimeout(() => {
+            article.style.display = 'none';
+          }, 300);
+        }
+      }
+    });
+  });
+</script></main>
+</div>
+<script>
+    // Global shortcut handler for Cmd+N / Ctrl+N to trigger composition
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        const composeBtn = document.querySelector('button:has(.material-symbols-outlined)');
+        if (composeBtn) composeBtn.focus();
+      }
+    });
+  </script>
+</body></html>

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tenun — Keyword Search</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "umbra-canvas": "#0D0D0E",
+            "graphite-panel": "#161618",
+            "ash-rise": "#1E1E21",
+            "foam-ink": "#F4F4F5",
+            "slate-mute": "#A1A1AA",
+            "dim-veil": "#70707A",
+            "ember": "#E8633C",
+            "healthy-lime": "#4ADE80",
+            "caution-amber": "#FBBF24",
+            "coral-alert": "#F87171",
+            "hairline": "rgba(244, 244, 245, 0.08)",
+            "hairline-subtle": "rgba(244, 244, 245, 0.04)"
+          },
+          fontFamily: {
+            sans: ["Geist", "sans-serif"],
+            mono: ["Geist Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+<style id="tenun-typography">
+  .font-headline-xl{font-family:"Geist",sans-serif;font-size:2.25rem;line-height:2.75rem;font-weight:600;letter-spacing:-0.03em}
+  .font-headline-lg{font-family:"Geist",sans-serif;font-size:1.5rem;line-height:2rem;font-weight:500;letter-spacing:-0.02em}
+  .font-headline-md{font-family:"Geist",sans-serif;font-size:1.125rem;line-height:1.5rem;font-weight:500;letter-spacing:-0.015em}
+  .font-body-editorial{font-family:"Geist",sans-serif;font-size:0.9375rem;line-height:1.5rem;letter-spacing:-0.005em}
+  .font-body-dense{font-family:"Geist",sans-serif;font-size:0.8125rem;line-height:1.25rem}
+  .font-label-ui{font-family:"Geist",sans-serif;font-size:0.75rem;line-height:1rem;font-weight:500;letter-spacing:0.02em}
+  .font-label-mono{font-family:"Geist Mono",monospace;font-size:0.75rem;line-height:1rem;font-weight:400;letter-spacing:0}
+  .text-data-metric{font-family:"Geist Mono",monospace;font-size:1.125rem;line-height:1.25rem;font-weight:500;letter-spacing:-0.01em}
+  .text-data-mono-xs{font-family:"Geist Mono",monospace;font-size:0.6875rem;line-height:0.875rem;font-weight:400;letter-spacing:0.02em}
+</style>
+<style>
+    body {
+      background-color: #0D0D0E;
+      color: #F4F4F5;
+      font-family: 'Geist', sans-serif;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    @keyframes breathing {
+      0%, 100% { opacity: 0.35; transform: scale(0.96); }
+      50% { opacity: 1; transform: scale(1.04); }
+    }
+    .animate-breathing-dot {
+      animation: breathing 2.4s ease-in-out infinite;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0D0D0E;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1E1E21;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #70707A;
+    }
+  </style>
+<meta content="web_dashboard" name="shell-type"/></head>
+<body class="bg-umbra-canvas text-foam-ink min-h-screen selection:bg-ember selection:text-umbra-canvas font-sans text-[13px] leading-relaxed">
+<!-- Persistent Left Sidebar (Fixed 240px) -->
+<aside class="fixed left-0 top-0 bottom-0 w-60 bg-graphite-panel border-r border-hairline z-50 flex flex-col justify-between select-none">
+<div class="flex flex-col">
+<!-- App Brand Header -->
+<div class="h-14 px-4 flex items-center justify-between border-b border-hairline">
+<div class="flex items-center gap-2.5">
+<img alt="Tenun Logo" class="w-7 h-7 rounded-md object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XQpQe1pxUPZEKDdIxJ2scm11TzW2CJEi9uKTiBYK-HBklGlO-Gu27J2iaeM05JS3FHzNp0fbPKmvNUfN84Y5bLvtFK3p9--ZIqx6X0Ujk8VQo_aOiKTZZU55swKxGH-xLNy4-14DdHmRqeHG5aHjwdvCuQXDYidd_yRKMTVaYSgtiNZd0gVO9lLVdYxLjnVRoh49TpddWxAa6ziaCu6PoB0ygvzFV3zqJ63_QkyMBFxZZfVLWd01o5Zi4"/>
+<span class="font-mono text-sm font-semibold tracking-tight text-foam-ink uppercase">Tenun</span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-ash-rise border border-hairline">
+<span class="w-1.5 h-1.5 rounded-full bg-ember animate-breathing-dot"></span>
+<span class="font-mono text-[10px] tracking-wider text-slate-mute uppercase">Live</span>
+</div>
+</div>
+<!-- Rate Quota Quick Bar -->
+<div class="px-4 py-3 border-b border-hairline bg-graphite-panel">
+<div class="flex items-center justify-between font-mono text-[11px] mb-1.5">
+<span class="text-slate-mute uppercase tracking-wider">Rate Quota</span>
+<span class="text-foam-ink font-medium">217 <span class="text-dim-veil">/ 250</span></span>
+</div>
+<div class="w-full h-1 bg-ash-rise rounded-full overflow-hidden">
+<div class="h-full bg-caution-amber w-[86.8%]"></div>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col p-2 space-y-0.5">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-foam-ink bg-ash-rise border-l-2 border-ember font-medium transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px] text-foam-ink">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">edit_note</span>
+<span>Compose Post</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]">forum</span>
+<span>Reply Queue</span>
+</div>
+<span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-ash-rise text-slate-mute border border-hairline">14</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">manage_search</span>
+<span>Keyword Search</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span>Settings / Accounts</span>
+</a>
+</nav>
+</div>
+<!-- Bottom User Profile Card -->
+<div class="p-3 border-t border-hairline bg-graphite-panel">
+<div class="flex items-center gap-2.5 px-2 py-1.5 rounded hover:bg-ash-rise/60 transition-colors">
+<img alt="Bramantyo" class="w-8 h-8 rounded-full object-cover ring-1 ring-hairline" src="https://lh3.googleusercontent.com/aida/AEtjO1XujctwhPj1DD5tMxpxS6HMOi_Sw_--p6vjBf7jFVZ-bagoeSHmyoEkS94abVmyrIRMS4CrP2z13hk-QFtR2CiBegs4ZaZITOaWf996lTHRryMcB3YxZaZ7OBt4aNShPAsKrBGjH-lxoojEMyxTO0myStgDKl-L3rMvEJIvhlD8Sea0hmGg50va7us2zCG3PGpXKANkbjsjrw-v6FMIlPzotd6ewVvtyKPXm-T9aDJxTm8YfKfbaGT0KWRx"/>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="text-[12px] font-medium text-foam-ink truncate leading-tight">Bramantyo</span>
+<span class="font-mono text-[10px] text-slate-mute truncate">@bramantyo.threads</span>
+</div>
+<button class="text-slate-mute hover:text-foam-ink transition-colors p-1" title="Sign out" type="button">
+<span class="material-symbols-outlined text-[16px] leading-none">logout</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrapper (offset by sidebar width 240px) -->
+<div class="pl-60 flex flex-col min-h-screen">
+<!-- Persistent Top Bar (h-14) -->
+<header class="h-14 bg-graphite-panel/90 backdrop-blur-md border-b border-hairline sticky top-0 z-40 px-6 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<!-- Live Stream Telemetry -->
+<div class="flex items-center gap-2 font-mono text-[11px] text-slate-mute">
+<span class="w-2 h-2 rounded-full bg-ember animate-breathing-dot"></span>
+<span class="text-foam-ink font-medium tracking-wide">LIVE STREAM_STABLE</span>
+</div>
+<span class="h-3 w-px bg-hairline"></span>
+<div class="flex items-center gap-1.5 font-mono text-[11px] text-slate-mute">
+<span>LATENCY:</span>
+<span class="text-healthy-lime font-mono">28ms</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<!-- Quick Action Trigger -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-ember text-umbra-canvas font-semibold text-[12px] hover:opacity-95 active:scale-[0.99] transition-all" type="button">
+<span class="material-symbols-outlined text-[16px] leading-none">add</span>
+<span>New Broadcast</span>
+</button>
+<span class="h-3 w-px bg-hairline"></span>
+<button class="p-1.5 text-slate-mute hover:text-foam-ink transition-colors" title="Notifications" type="button">
+<span class="material-symbols-outlined text-[18px] leading-none">notifications</span>
+</button>
+<img alt="Bramantyo" class="w-7 h-7 rounded-full object-cover ring-1 ring-hairline" src="https://lh3.googleusercontent.com/aida/AEtjO1XujctwhPj1DD5tMxpxS6HMOi_Sw_--p6vjBf7jFVZ-bagoeSHmyoEkS94abVmyrIRMS4CrP2z13hk-QFtR2CiBegs4ZaZITOaWf996lTHRryMcB3YxZaZ7OBt4aNShPAsKrBGjH-lxoojEMyxTO0myStgDKl-L3rMvEJIvhlD8Sea0hmGg50va7us2zCG3PGpXKANkbjsjrw-v6FMIlPzotd6ewVvtyKPXm-T9aDJxTm8YfKfbaGT0KWRx"/>
+</div>
+</header>
+<!-- Dashboard Content Canvas -->
+<main class="flex-1 p-6 max-w-[1440px] w-full mx-auto space-y-6"><div class="flex flex-col w-full">
+<!-- Update Shell Active Nav Link Indicator via script -->
+<script>
+    (function highlightNav() {
+      const links = document.querySelectorAll('aside nav a');
+      links.forEach(el => {
+        if (el.textContent.includes('Keyword Search')) {
+          el.className = 'flex items-center gap-3 px-3 py-2 rounded text-foam-ink bg-ash-rise border-l-2 border-ember font-medium transition-colors';
+          const icon = el.querySelector('.material-symbols-outlined');
+          if (icon) icon.className = 'material-symbols-outlined text-[18px] text-foam-ink';
+        } else if (el.textContent.includes('Overview')) {
+          el.className = 'flex items-center gap-3 px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors';
+          const icon = el.querySelector('.material-symbols-outlined');
+          if (icon) icon.className = 'material-symbols-outlined text-[18px]';
+        }
+      });
+    })();
+  </script>
+<!-- Top Discovery Metadata Bar -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-2 font-label-mono text-label-mono text-slate-mute uppercase tracking-widest">
+<span>WORKSPACE</span>
+<span class="text-dim-veil">/</span>
+<span class="text-foam-ink">DISCOVERY ENGINE</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-foam-ink tracking-tight">
+        Keyword Search &amp; Conversation Radar
+      </h1>
+</div>
+<!-- Live Telemetry Group -->
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex items-center gap-2 px-2.5 py-1 rounded bg-ash-rise">
+<span class="w-1.5 h-1.5 rounded-full bg-healthy-lime animate-pulse"></span>
+<span class="font-label-mono text-label-mono text-healthy-lime uppercase tracking-wider">LIVE CRAWLER ACTIVE</span>
+</div>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-ash-rise font-label-mono text-label-mono text-slate-mute">
+<span>INDEX LATENCY:</span>
+<span class="text-foam-ink">42ms</span>
+</div>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-ash-rise font-label-mono text-label-mono text-slate-mute">
+<span>GRAPH API QUOTA:</span>
+<span class="text-foam-ink">182 <span class="text-dim-veil">/ 250</span></span>
+</div>
+</div>
+</div>
+<!-- Search Command Center Panel -->
+<section class="bg-graphite-panel rounded-lg p-5 space-y-4">
+<!-- Primary Query Input -->
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-4 text-slate-mute pointer-events-none text-[20px]">search</span>
+<input class="w-full bg-ash-rise text-foam-ink font-body-dense text-body-dense pl-11 pr-32 py-3 rounded outline-none focus:ring-2 focus:ring-ember placeholder:text-dim-veil transition-all selection:bg-ember selection:text-umbra-canvas" id="query-input" placeholder="Query active Threads conversations, authors, or syntactic tags (e.g. 'design systems', 'wasm', 'local-first')..." type="text" value="ekonomi digital Indonesia UMKM"/>
+<div class="absolute right-2 flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-4 py-1.5 rounded bg-ember text-umbra-canvas font-label-ui text-label-ui font-semibold hover:opacity-95 active:translate-y-px transition-all" type="button">
+<span class="material-symbols-outlined text-[16px] leading-none">radar</span>
+<span>Run Query</span>
+</button>
+</div>
+</div>
+<!-- Mode Filters & Tracked Entity Tokens -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-2">
+<!-- Mode Selection Pills -->
+<div class="flex flex-wrap items-center gap-1.5">
+<button class="px-2.5 py-1 rounded bg-ash-rise text-foam-ink font-label-ui text-label-ui font-medium hover:bg-dim-veil/20 transition-colors" type="button">
+          Live Discussions (Realtime)
+        </button>
+<button class="px-2.5 py-1 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise transition-colors font-label-ui text-label-ui" type="button">
+          High Engagement (&gt;50 replies)
+        </button>
+<button class="px-2.5 py-1 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise transition-colors font-label-ui text-label-ui" type="button">
+          Unanswered Queries
+        </button>
+<button class="px-2.5 py-1 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise transition-colors font-label-ui text-label-ui" type="button">
+          Influential Voices Only
+        </button>
+</div>
+<!-- Quick Filter Specs -->
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-ash-rise font-label-mono text-data-mono-xs text-slate-mute">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>Timeframe: <strong class="text-foam-ink font-normal">Last 24h</strong></span>
+</div>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-ash-rise font-label-mono text-data-mono-xs text-slate-mute">
+<span class="material-symbols-outlined text-[14px]">visibility</span>
+<span>Min Impressions: <strong class="text-foam-ink font-normal">1.5k</strong></span>
+</div>
+</div>
+</div>
+<!-- Active Monitored Keywords Cloud -->
+<div class="flex flex-wrap items-center gap-2 pt-1">
+<span class="font-label-mono text-data-mono-xs text-dim-veil uppercase tracking-wider mr-1">TRACKING:</span>
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-ash-rise font-label-mono text-label-mono text-foam-ink">
+<span class="w-1.5 h-1.5 rounded-full bg-ember animate-pulse"></span>
+<span>#design systems</span>
+<button class="text-dim-veil hover:text-coral-alert transition-colors ml-0.5" type="button">×</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-ash-rise font-label-mono text-label-mono text-foam-ink">
+<span class="w-1.5 h-1.5 rounded-full bg-ember animate-pulse"></span>
+<span>#rsc performance</span>
+<button class="text-dim-veil hover:text-coral-alert transition-colors ml-0.5" type="button">×</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-ash-rise font-label-mono text-label-mono text-foam-ink">
+<span class="w-1.5 h-1.5 rounded-full bg-ember animate-pulse"></span>
+<span>#state machines</span>
+<button class="text-dim-veil hover:text-coral-alert transition-colors ml-0.5" type="button">×</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-ash-rise font-label-mono text-label-mono text-foam-ink">
+<span class="w-1.5 h-1.5 rounded-full bg-ember animate-pulse"></span>
+<span>#threads api</span>
+<button class="text-dim-veil hover:text-coral-alert transition-colors ml-0.5" type="button">×</button>
+</span>
+<button class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-ash-rise/50 hover:bg-ash-rise text-slate-mute hover:text-foam-ink font-label-mono text-label-mono transition-colors" type="button">
+<span class="material-symbols-outlined text-[13px]">add</span>
+<span>Add Filter</span>
+</button>
+</div>
+</section>
+<!-- Split Screen Analytics & Execution Workspace -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6 items-start">
+<!-- LEFT 65% COLUMN: Live Match Stream -->
+<div class="lg:col-span-8 flex flex-col space-y-4">
+<!-- Stream Header Controls -->
+<div class="flex items-center justify-between px-1 py-1">
+<div class="flex items-center gap-2">
+<span class="font-label-mono text-label-mono text-slate-mute">
+            Found <strong class="text-foam-ink font-medium">48</strong> matching threads in trailing 24h
+          </span>
+</div>
+<div class="flex items-center gap-1 font-label-mono text-data-mono-xs text-slate-mute">
+<span class="text-dim-veil uppercase">Sort by:</span>
+<button class="px-2 py-0.5 rounded bg-ash-rise text-foam-ink" type="button">Relevance Score</button>
+<button class="px-2 py-0.5 rounded hover:bg-ash-rise text-slate-mute hover:text-foam-ink transition-colors" type="button">Recency</button>
+<button class="px-2 py-0.5 rounded hover:bg-ash-rise text-slate-mute hover:text-foam-ink transition-colors" type="button">Reply Opportunity</button>
+</div>
+</div>
+<!-- Feed Container -->
+<div class="space-y-3">
+<!-- Result Card 1 (Guillermo Rauch) -->
+<article class="bg-graphite-panel rounded-lg p-5 space-y-3.5 hover:bg-graphite-panel/90 transition-colors relative group">
+<!-- Card Meta Row -->
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-center gap-3 min-w-0">
+<img class="w-10 h-10 rounded-full object-cover shrink-0" data-alt="Monochrome studio portrait of tech founder Guillermo Rauch with clean low-key rim lighting on dark background in graphite and ember editorial aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxzUpz_pslBHtv-FiX_THLvyyiuv7WsoVndAZsde63OQHfToq9bvqSzoFPWnDItHKyXX_u3D074OW19DfVPS99MpYg_ZE-jG6kdAVhZQn7HGaYDxKDvmC64acWphBPXaUdqIhlFhHCUP6i61OgdvUy1HusmwFvWaThbXRM_YfC2KKM-tbkzAl5pAQKJqzk3TC93aC-3_3PtL4UVMRVcRMYWSXrYwiTFMdjGMjJ3nku2Tqb32O3RVioyA"/>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-md text-headline-md text-foam-ink font-medium truncate">Guillermo Rauch</span>
+<span class="material-symbols-outlined text-ember text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-mono text-label-mono text-slate-mute truncate">@guillermo_rauch</span>
+</div>
+<div class="flex items-center gap-2 font-label-mono text-data-mono-xs text-dim-veil">
+<span>34m ago</span>
+<span>•</span>
+<span class="text-slate-mute">#rsc performance</span>
+</div>
+</div>
+</div>
+<!-- Fit Pill -->
+<div class="shrink-0 flex items-center gap-1.5 px-2 py-0.5 rounded bg-healthy-lime/10 font-label-mono text-data-mono-xs text-healthy-lime">
+<span class="w-1 h-1 rounded-full bg-healthy-lime"></span>
+<span>98.2% Semantic Fit</span>
+</div>
+</div>
+<!-- Content Body -->
+<p class="font-body-editorial text-body-editorial text-foam-ink leading-relaxed">
+            The architectural shift towards edge computing isn't about raw bandwidth—it's about deterministic latency at the geographical boundary of the client.
+          </p>
+<!-- Metrics Row -->
+<div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+<div class="flex items-center gap-4 font-label-mono text-label-mono text-slate-mute">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-dim-veil">forum</span>
+<strong class="text-foam-ink font-normal">142</strong> replies
+              </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-dim-veil">repeat</span>
+<strong class="text-foam-ink font-normal">89</strong> reposts
+              </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-dim-veil">favorite</span>
+<strong class="text-foam-ink font-normal">1.8k</strong> likes
+              </span>
+</div>
+<div class="flex items-center gap-1 font-label-mono text-data-mono-xs text-ember bg-ember/10 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[13px]">trending_up</span>
+<span>+34 replies/hr</span>
+</div>
+</div>
+<!-- Action Ribbon -->
+<div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-ember text-umbra-canvas font-label-ui text-label-ui font-medium hover:opacity-95 active:translate-y-px transition-all" onclick="stageTargetReply('@guillermo_rauch', 'The architectural shift towards edge computing isn\'t about raw bandwidth...', 'Decoupling server cache keys from client mutation cycles ensures zero waterfall invalidations.')" type="button">
+<span class="material-symbols-outlined text-[15px] leading-none">reply</span>
+<span>Queue as Reply</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-ash-rise hover:bg-ash-rise/80 text-foam-ink font-label-ui text-label-ui transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px] text-slate-mute">open_in_new</span>
+<span>Open Thread</span>
+</button>
+</div>
+<div class="flex items-center gap-1.5">
+<button class="flex items-center gap-1 px-2.5 py-1.5 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise text-label-mono font-label-mono transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">person_add</span>
+<span>Track Author</span>
+</button>
+<button class="flex items-center gap-1 px-2.5 py-1.5 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise text-label-mono font-label-mono transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">insights</span>
+<span>Analyze Sentiment</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Result Card 2 (Rani Puspita) -->
+<article class="bg-graphite-panel rounded-lg p-5 space-y-3.5 hover:bg-graphite-panel/90 transition-colors relative group">
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-center gap-3 min-w-0">
+<img class="w-10 h-10 rounded-full object-cover shrink-0" data-alt="Potret editorial ilustrator digital Rani Puspita dalam estetika dark graphite dengan pencahayaan kontras minimalis" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARoixWpZuF77-zzu-2tyJOaoImeZgfZEKf1H9gCfdW_tELbH-7jcfIVbFrltxjsDTm0VIbtWyzQ3ka_P6bWIhQWNH2dgoZdUX6riO2IMxMeXYbvKvny2v4v9qaovH5kOg0D8BNxQ88nDn1c7_X-uX6TFKZ25DuvJdS8g3xa66k_FBW9TXSnk0TrhAjzVMvEhb7nAqQCKxC4gsI4jAmTqNeZLPtLOs1f7nZkGOIotFjROQnq6sUNsFbBg"/>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-md text-headline-md text-foam-ink font-medium truncate">Rani Puspita</span>
+<span class="font-label-mono text-label-mono text-slate-mute truncate">@ranipuspita</span>
+</div>
+<div class="flex items-center gap-2 font-label-mono text-data-mono-xs text-dim-veil">
+<span>1h 12m ago</span>
+<span>•</span>
+<span class="text-slate-mute">#ekonomiDigital</span>
+</div>
+</div>
+</div>
+<div class="shrink-0 flex items-center gap-1.5 px-2 py-0.5 rounded bg-healthy-lime/10 font-label-mono text-data-mono-xs text-healthy-lime">
+<span class="w-1 h-1 rounded-full bg-healthy-lime"></span>
+<span>94.6% Semantic Fit</span>
+</div>
+</div>
+<p class="font-body-editorial text-body-editorial text-foam-ink leading-relaxed">
+            Ekonomi digital Indonesia tumbuh dari cerita kecil: UMKM naik kelas lewat percakapan, bukan sekadar iklan. Enam dari sepuluh pembeli memutuskan setelah diskusi hangat di Threads.
+          </p>
+<div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+<div class="flex items-center gap-4 font-label-mono text-label-mono text-slate-mute">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-dim-veil">forum</span>
+<strong class="text-foam-ink font-normal">84</strong> replies
+              </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-dim-veil">repeat</span>
+<strong class="text-foam-ink font-normal">42</strong> reposts
+              </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-dim-veil">favorite</span>
+<strong class="text-foam-ink font-normal">920</strong> likes
+              </span>
+</div>
+<div class="flex items-center gap-1 font-label-mono text-data-mono-xs text-caution-amber bg-caution-amber/10 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[13px]">bolt</span>
+<span>High conversion index</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-ember text-umbra-canvas font-label-ui text-label-ui font-medium hover:opacity-95 active:translate-y-px transition-all" onclick="stageTargetReply('@ranipuspita', 'Ekonomi digital Indonesia tumbuh dari cerita kecil...', 'Mulai dari data pembeli, bukan asumsi — biarkan percakapan menuntun posisi brand.')" type="button">
+<span class="material-symbols-outlined text-[15px] leading-none">reply</span>
+<span>Queue as Reply</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-ash-rise hover:bg-ash-rise/80 text-foam-ink font-label-ui text-label-ui transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px] text-slate-mute">open_in_new</span>
+<span>Open Thread</span>
+</button>
+</div>
+<button class="flex items-center gap-1 px-2.5 py-1.5 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise text-label-mono font-label-mono transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">person_add</span>
+<span>Track Author</span>
+</button>
+</div>
+</article>
+<!-- Result Card 3 (Theo - t3dotgg) -->
+<article class="bg-graphite-panel rounded-lg p-5 space-y-3.5 hover:bg-graphite-panel/90 transition-colors relative group">
+<div class="flex items-start justify-between gap-4">
+<div class="flex items-center gap-3 min-w-0">
+<img class="w-10 h-10 rounded-full object-cover shrink-0" data-alt="Moody cinematic portrait of software creator Theo with deep graphite shadows and sharp amber keylight in minimalist studio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhd3XmJhrYXNY6VeKZWyZe-g4SBfDbsXj5daZhgoswXAej_bG_iPXWiqRSeInnGZ_cwQy1EuGUilxj60mOv_OQxPVhaLxVjZAUQ4hlA-mzpn7JO4S8aIjMPj4X3_ocYHe6xtQ8e7573UZHFvnnxgUCpV3GTE3SL3OLu_hk-BbhwTjV--DNKbAvHzmV3FuwaCFbWRYqC7wlAzVepPXEftFJbR-5gCHvWMUjHTgouGdo1TQsrS3AV1jDZw"/>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-md text-headline-md text-foam-ink font-medium truncate">Theo</span>
+<span class="material-symbols-outlined text-ember text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-mono text-label-mono text-slate-mute truncate">@t3dotgg</span>
+</div>
+<div class="flex items-center gap-2 font-label-mono text-data-mono-xs text-dim-veil">
+<span>2h 45m ago</span>
+<span>•</span>
+<span class="text-slate-mute">#state machines</span>
+</div>
+</div>
+</div>
+<div class="shrink-0 flex items-center gap-1.5 px-2 py-0.5 rounded bg-healthy-lime/10 font-label-mono text-data-mono-xs text-healthy-lime">
+<span class="w-1 h-1 rounded-full bg-healthy-lime"></span>
+<span>89.1% Semantic Fit</span>
+</div>
+</div>
+<p class="font-body-editorial text-body-editorial text-foam-ink leading-relaxed">
+            React Server Components fundamentally break traditional client-side cache invalidation assumptions. You have to treat navigation as a streaming pipeline rather than discrete route transitions.
+          </p>
+<div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+<div class="flex items-center gap-4 font-label-mono text-label-mono text-slate-mute">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-dim-veil">forum</span>
+<strong class="text-foam-ink font-normal">230</strong> replies
+              </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-dim-veil">repeat</span>
+<strong class="text-foam-ink font-normal">115</strong> reposts
+              </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-dim-veil">favorite</span>
+<strong class="text-foam-ink font-normal">3.4k</strong> likes
+              </span>
+</div>
+<div class="flex items-center gap-1 font-label-mono text-data-mono-xs text-slate-mute bg-ash-rise px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[13px]">speed</span>
+<span>Velocity: 68 rep/hr</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-ember text-umbra-canvas font-label-ui text-label-ui font-medium hover:opacity-95 active:translate-y-px transition-all" onclick="stageTargetReply('@t3dotgg', 'React Server Components fundamentally break traditional client-side cache...', 'Streaming route invalidation replaces coarse optimistic rollbacks with boundary-level revalidations.')" type="button">
+<span class="material-symbols-outlined text-[15px] leading-none">reply</span>
+<span>Queue as Reply</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-ash-rise hover:bg-ash-rise/80 text-foam-ink font-label-ui text-label-ui transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px] text-slate-mute">open_in_new</span>
+<span>Open Thread</span>
+</button>
+</div>
+<button class="flex items-center gap-1 px-2.5 py-1.5 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise text-label-mono font-label-mono transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">person_add</span>
+<span>Track Author</span>
+</button>
+</div>
+</article>
+</div>
+<!-- Infinite Stream Status Footer -->
+<div class="flex items-center justify-between p-3 rounded bg-graphite-panel/60 font-label-mono text-data-mono-xs text-slate-mute">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-healthy-lime animate-pulse"></span>
+<span>Streaming 3 of 48 live matches</span>
+</div>
+<div class="flex items-center gap-2 text-dim-veil">
+<span>Auto-refreshing every 30s</span>
+<span>•</span>
+<button class="text-ember hover:underline font-medium" type="button">Pause Polling</button>
+</div>
+</div>
+</div>
+<!-- RIGHT 35% COLUMN: Dispatch Staging & Cluster Telemetry -->
+<div class="lg:col-span-4 flex flex-col space-y-5">
+<!-- Staging Card: Fast Queue Dispatch Target -->
+<section class="bg-graphite-panel rounded-lg p-5 space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-ember text-[18px]">bolt</span>
+<h2 class="font-headline-md text-headline-md text-foam-ink font-medium">Fast Queue Dispatch</h2>
+</div>
+<span class="font-label-mono text-data-mono-xs text-dim-veil uppercase tracking-wider">STAGING</span>
+</div>
+<!-- Target Snippet Preview Box -->
+<div class="bg-ash-rise rounded p-3 space-y-2">
+<div class="flex items-center justify-between font-label-mono text-data-mono-xs">
+<span class="text-ember font-medium" id="staged-author">@guillermo_rauch</span>
+<span class="text-dim-veil">Target Context</span>
+</div>
+<p class="font-body-dense text-body-dense text-slate-mute italic" id="staged-snippet">
+            "The architectural shift towards edge computing isn't about raw bandwidth—it's about deterministic latency..."
+          </p>
+</div>
+<!-- Synthesized Draft Suggestion Box -->
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-label-ui text-label-ui text-slate-mute">Synthesized Response Draft</span>
+<span class="font-label-mono text-data-mono-xs text-healthy-lime">Editorial AI v2.4</span>
+</div>
+<textarea class="w-full bg-ash-rise text-foam-ink font-body-dense text-body-dense p-3 rounded outline-none focus:ring-2 focus:ring-ember resize-none leading-relaxed transition-all" id="staged-reply-draft" rows="4">Decoupling server cache keys from client mutation cycles ensures zero waterfall invalidations at the regional proxy level.</textarea>
+</div>
+<!-- Action Button -->
+<button class="w-full flex items-center justify-center gap-2 py-2.5 rounded bg-ember text-umbra-canvas font-label-ui text-label-ui font-semibold hover:opacity-95 active:translate-y-px transition-all" id="dispatch-btn" onclick="confirmDispatch()" type="button">
+<span class="material-symbols-outlined text-[17px] leading-none">send</span>
+<span>Send to Reply Inbox (Slot #15)</span>
+</button>
+<p class="font-label-mono text-data-mono-xs text-dim-veil text-center">
+          Will stage into Reply Queue without publishing immediately.
+        </p>
+</section>
+<!-- Card 2: Monitored Query Clusters & Volume -->
+<section class="bg-graphite-panel rounded-lg p-5 space-y-4">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md text-foam-ink font-medium">Cluster Density</h2>
+<span class="font-label-mono text-data-mono-xs text-dim-veil">24h Vol</span>
+</div>
+<div class="space-y-3.5">
+<!-- Item 1 -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between font-label-mono text-label-mono">
+<span class="text-foam-ink">Design Systems</span>
+<span class="text-foam-ink">142 <span class="text-healthy-lime text-data-mono-xs">(+18%)</span></span>
+</div>
+<div class="w-full h-1.5 bg-ash-rise rounded-full overflow-hidden">
+<div class="h-full bg-ember w-[76%] rounded-full"></div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between font-label-mono text-label-mono">
+<span class="text-foam-ink">Server Components / RSC</span>
+<span class="text-foam-ink">98 <span class="text-healthy-lime text-data-mono-xs">(+34%)</span></span>
+</div>
+<div class="w-full h-1.5 bg-ash-rise rounded-full overflow-hidden">
+<div class="h-full bg-foam-ink w-[54%] rounded-full"></div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between font-label-mono text-label-mono">
+<span class="text-foam-ink">Local-First Architecture</span>
+<span class="text-foam-ink">64 <span class="text-healthy-lime text-data-mono-xs">(+8%)</span></span>
+</div>
+<div class="w-full h-1.5 bg-ash-rise rounded-full overflow-hidden">
+<div class="h-full bg-slate-mute w-[38%] rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Inline Telemetry Graphic -->
+<div class="pt-2">
+<div class="p-3 bg-ash-rise rounded flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-mono text-data-mono-xs text-dim-veil uppercase">Total Monitored Vol</span>
+<span class="font-data-metric text-data-metric text-foam-ink font-medium">1,248 hits/day</span>
+</div>
+<!-- Minimal sparkline graphic -->
+<svg class="w-24 h-8 text-ember overflow-visible" fill="none" stroke="currentColor" viewbox="0 0 100 30">
+<path d="M0 24 L15 22 L30 14 L45 19 L60 8 L75 12 L90 3 L100 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+</svg>
+</div>
+</div>
+</section>
+<!-- Card 3: Rate-Limit Protection -->
+<section class="bg-graphite-panel rounded-lg p-5 space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-healthy-lime text-[18px]">verified_user</span>
+<h2 class="font-headline-md text-headline-md text-foam-ink font-medium">Rate-Limit Guard</h2>
+</div>
+<span class="font-label-mono text-data-mono-xs text-healthy-lime bg-healthy-lime/10 px-2 py-0.5 rounded">Nominal</span>
+</div>
+<p class="font-body-dense text-body-dense text-slate-mute">
+          Daily discovery execution capacity tracks Graph API constraints to prevent shadow-bans or key revocation.
+        </p>
+<div class="space-y-1.5 pt-1">
+<div class="flex items-center justify-between font-label-mono text-data-mono-xs">
+<span class="text-slate-mute">Daily Queries Executed</span>
+<span class="text-foam-ink font-medium">45 <span class="text-dim-veil">/ 100 max safe</span></span>
+</div>
+<div class="w-full h-1 bg-ash-rise rounded-full overflow-hidden">
+<div class="h-full bg-healthy-lime w-[45%]"></div>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between font-label-mono text-data-mono-xs text-dim-veil">
+<span>Safe threshold: <strong>ACTIVE</strong></span>
+<span>Resets in: <strong>4h 18m</strong></span>
+</div>
+</section>
+</div>
+</div>
+<!-- Interactive Staging Logic -->
+<script>
+    function stageTargetReply(author, snippet, suggestion) {
+      const stagedAuthor = document.getElementById('staged-author');
+      const stagedSnippet = document.getElementById('staged-snippet');
+      const stagedDraft = document.getElementById('staged-reply-draft');
+      
+      if (stagedAuthor) stagedAuthor.innerText = author;
+      if (stagedSnippet) stagedSnippet.innerText = '"' + snippet + '"';
+      if (stagedDraft) {
+        stagedDraft.value = suggestion;
+        stagedDraft.focus();
+      }
+
+      // Smooth scroll to staging area on smaller screens
+      if (window.innerWidth < 1024) {
+        stagedDraft.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function confirmDispatch() {
+      const btn = document.getElementById('dispatch-btn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[17px] leading-none">check</span><span>Staged to Queue!</span>';
+      btn.classList.remove('bg-ember');
+      btn.classList.add('bg-healthy-lime', 'text-umbra-canvas');
+
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.classList.remove('bg-healthy-lime');
+        btn.classList.add('bg-ember');
+      }, 2000);
+    }
+  </script>
+</div></main>
+</div>
+<script>
+    // Global shortcut handler for Cmd+N / Ctrl+N to trigger composition
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        const composeBtn = document.querySelector('button:has(.material-symbols-outlined)');
+        if (composeBtn) composeBtn.focus();
+      }
+    });
+  </script>
+</body></html>

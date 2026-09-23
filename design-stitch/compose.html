@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tenun — Compose Post</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "umbra-canvas": "#0D0D0E",
+            "graphite-panel": "#161618",
+            "ash-rise": "#1E1E21",
+            "foam-ink": "#F4F4F5",
+            "slate-mute": "#A1A1AA",
+            "dim-veil": "#70707A",
+            "ember": "#E8633C",
+            "healthy-lime": "#4ADE80",
+            "caution-amber": "#FBBF24",
+            "coral-alert": "#F87171",
+            "hairline": "rgba(244, 244, 245, 0.08)",
+            "hairline-subtle": "rgba(244, 244, 245, 0.04)"
+          },
+          fontFamily: {
+            sans: ["Geist", "sans-serif"],
+            mono: ["Geist Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+<style id="tenun-typography">
+  .font-headline-xl{font-family:"Geist",sans-serif;font-size:2.25rem;line-height:2.75rem;font-weight:600;letter-spacing:-0.03em}
+  .font-headline-lg{font-family:"Geist",sans-serif;font-size:1.5rem;line-height:2rem;font-weight:500;letter-spacing:-0.02em}
+  .font-headline-md{font-family:"Geist",sans-serif;font-size:1.125rem;line-height:1.5rem;font-weight:500;letter-spacing:-0.015em}
+  .font-body-editorial{font-family:"Geist",sans-serif;font-size:0.9375rem;line-height:1.5rem;letter-spacing:-0.005em}
+  .font-body-dense{font-family:"Geist",sans-serif;font-size:0.8125rem;line-height:1.25rem}
+  .font-label-ui{font-family:"Geist",sans-serif;font-size:0.75rem;line-height:1rem;font-weight:500;letter-spacing:0.02em}
+  .font-label-mono{font-family:"Geist Mono",monospace;font-size:0.75rem;line-height:1rem;font-weight:400;letter-spacing:0}
+  .text-data-metric{font-family:"Geist Mono",monospace;font-size:1.125rem;line-height:1.25rem;font-weight:500;letter-spacing:-0.01em}
+  .text-data-mono-xs{font-family:"Geist Mono",monospace;font-size:0.6875rem;line-height:0.875rem;font-weight:400;letter-spacing:0.02em}
+</style>
+<style>
+    body {
+      background-color: #0D0D0E;
+      color: #F4F4F5;
+      font-family: 'Geist', sans-serif;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    @keyframes breathing {
+      0%, 100% { opacity: 0.35; transform: scale(0.96); }
+      50% { opacity: 1; transform: scale(1.04); }
+    }
+    .animate-breathing-dot {
+      animation: breathing 2.4s ease-in-out infinite;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0D0D0E;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1E1E21;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #70707A;
+    }
+  </style>
+<meta content="web_dashboard" name="shell-type"/></head>
+<body class="bg-umbra-canvas text-foam-ink min-h-screen selection:bg-ember selection:text-umbra-canvas font-sans text-[13px] leading-relaxed">
+<!-- Persistent Left Sidebar (Fixed 240px) -->
+<aside class="fixed left-0 top-0 bottom-0 w-60 bg-graphite-panel border-r border-hairline z-50 flex flex-col justify-between select-none">
+<div class="flex flex-col">
+<!-- App Brand Header -->
+<div class="h-14 px-4 flex items-center justify-between border-b border-hairline">
+<div class="flex items-center gap-2.5">
+<img alt="Tenun Logo" class="w-7 h-7 rounded-md object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XQpQe1pxUPZEKDdIxJ2scm11TzW2CJEi9uKTiBYK-HBklGlO-Gu27J2iaeM05JS3FHzNp0fbPKmvNUfN84Y5bLvtFK3p9--ZIqx6X0Ujk8VQo_aOiKTZZU55swKxGH-xLNy4-14DdHmRqeHG5aHjwdvCuQXDYidd_yRKMTVaYSgtiNZd0gVO9lLVdYxLjnVRoh49TpddWxAa6ziaCu6PoB0ygvzFV3zqJ63_QkyMBFxZZfVLWd01o5Zi4"/>
+<span class="font-mono text-sm font-semibold tracking-tight text-foam-ink uppercase">Tenun</span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-ash-rise border border-hairline">
+<span class="w-1.5 h-1.5 rounded-full bg-ember animate-breathing-dot"></span>
+<span class="font-mono text-[10px] tracking-wider text-slate-mute uppercase">Live</span>
+</div>
+</div>
+<!-- Rate Quota Quick Bar -->
+<div class="px-4 py-3 border-b border-hairline bg-graphite-panel">
+<div class="flex items-center justify-between font-mono text-[11px] mb-1.5">
+<span class="text-slate-mute uppercase tracking-wider">Rate Quota</span>
+<span class="text-foam-ink font-medium">217 <span class="text-dim-veil">/ 250</span></span>
+</div>
+<div class="w-full h-1 bg-ash-rise rounded-full overflow-hidden">
+<div class="h-full bg-caution-amber w-[86.8%]"></div>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col p-2 space-y-0.5">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-foam-ink bg-ash-rise border-l-2 border-ember font-medium transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px] text-foam-ink">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">edit_note</span>
+<span>Compose Post</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]">forum</span>
+<span>Reply Queue</span>
+</div>
+<span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-ash-rise text-slate-mute border border-hairline">14</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">manage_search</span>
+<span>Keyword Search</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-slate-mute hover:text-foam-ink hover:bg-ash-rise/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span>Settings / Accounts</span>
+</a>
+</nav>
+</div>
+<!-- Bottom User Profile Card -->
+<div class="p-3 border-t border-hairline bg-graphite-panel">
+<div class="flex items-center gap-2.5 px-2 py-1.5 rounded hover:bg-ash-rise/60 transition-colors">
+<img alt="Bramantyo" class="w-8 h-8 rounded-full object-cover ring-1 ring-hairline" src="https://lh3.googleusercontent.com/aida/AEtjO1XujctwhPj1DD5tMxpxS6HMOi_Sw_--p6vjBf7jFVZ-bagoeSHmyoEkS94abVmyrIRMS4CrP2z13hk-QFtR2CiBegs4ZaZITOaWf996lTHRryMcB3YxZaZ7OBt4aNShPAsKrBGjH-lxoojEMyxTO0myStgDKl-L3rMvEJIvhlD8Sea0hmGg50va7us2zCG3PGpXKANkbjsjrw-v6FMIlPzotd6ewVvtyKPXm-T9aDJxTm8YfKfbaGT0KWRx"/>
+<div class="flex flex-col min-w-0 flex-1">
+<span class="text-[12px] font-medium text-foam-ink truncate leading-tight">Bramantyo</span>
+<span class="font-mono text-[10px] text-slate-mute truncate">@bramantyo.threads</span>
+</div>
+<button class="text-slate-mute hover:text-foam-ink transition-colors p-1" title="Sign out" type="button">
+<span class="material-symbols-outlined text-[16px] leading-none">logout</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrapper (offset by sidebar width 240px) -->
+<div class="pl-60 flex flex-col min-h-screen">
+<!-- Persistent Top Bar (h-14) -->
+<header class="h-14 bg-graphite-panel/90 backdrop-blur-md border-b border-hairline sticky top-0 z-40 px-6 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<!-- Live Stream Telemetry -->
+<div class="flex items-center gap-2 font-mono text-[11px] text-slate-mute">
+<span class="w-2 h-2 rounded-full bg-ember animate-breathing-dot"></span>
+<span class="text-foam-ink font-medium tracking-wide">LIVE STREAM_STABLE</span>
+</div>
+<span class="h-3 w-px bg-hairline"></span>
+<div class="flex items-center gap-1.5 font-mono text-[11px] text-slate-mute">
+<span>LATENCY:</span>
+<span class="text-healthy-lime font-mono">28ms</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<!-- Quick Action Trigger -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-ember text-umbra-canvas font-semibold text-[12px] hover:opacity-95 active:scale-[0.99] transition-all" type="button">
+<span class="material-symbols-outlined text-[16px] leading-none">add</span>
+<span>New Broadcast</span>
+</button>
+<span class="h-3 w-px bg-hairline"></span>
+<button class="p-1.5 text-slate-mute hover:text-foam-ink transition-colors" title="Notifications" type="button">
+<span class="material-symbols-outlined text-[18px] leading-none">notifications</span>
+</button>
+<img alt="Bramantyo" class="w-7 h-7 rounded-full object-cover ring-1 ring-hairline" src="https://lh3.googleusercontent.com/aida/AEtjO1XujctwhPj1DD5tMxpxS6HMOi_Sw_--p6vjBf7jFVZ-bagoeSHmyoEkS94abVmyrIRMS4CrP2z13hk-QFtR2CiBegs4ZaZITOaWf996lTHRryMcB3YxZaZ7OBt4aNShPAsKrBGjH-lxoojEMyxTO0myStgDKl-L3rMvEJIvhlD8Sea0hmGg50va7us2zCG3PGpXKANkbjsjrw-v6FMIlPzotd6ewVvtyKPXm-T9aDJxTm8YfKfbaGT0KWRx"/>
+</div>
+</header>
+<!-- Dashboard Content Canvas -->
+<main class="flex-1 p-6 max-w-[1440px] w-full mx-auto space-y-6"><div class="flex flex-col w-full">
+<!-- Breadcrumb & Workspace Header -->
+<header class="flex flex-col md:flex-row md:items-end justify-between pb-8 gap-4">
+<div class="space-y-1.5">
+<div class="flex items-center gap-2 font-label-mono text-label-mono text-dim-veil tracking-wider uppercase">
+<span>WORKSPACE</span>
+<span class="text-hairline">/</span>
+<span class="text-slate-mute">EDITORIAL COMPOSER</span>
+<span class="text-hairline">/</span>
+<span class="text-ember">STREAM_01</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-foam-ink tracking-tight">Studio Composer</h1>
+<p class="font-body-editorial text-body-editorial text-slate-mute max-w-2xl">
+        Draft thread narratives, sequence programmatic cadences, and inspect typography metrics against conversational constraints.
+      </p>
+</div>
+<!-- Active Stream Telemetry Badge -->
+<div class="flex items-center gap-3 bg-graphite-panel px-3.5 py-2 rounded self-start md:self-auto">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-ember animate-breathing-dot"></span>
+<span class="font-label-mono text-data-mono-xs uppercase text-slate-mute tracking-widest">THREAD_PIPELINE</span>
+</div>
+<span class="h-3 w-px bg-hairline"></span>
+<span class="font-label-mono text-data-mono-xs text-healthy-lime">SYNCED_TO_EDGE</span>
+</div>
+</header>
+<!-- Two-Column Asymmetrical Grid Split -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column: Primary Editorial Canvas (approx 60%) -->
+<div class="lg:col-span-7 flex flex-col space-y-6">
+<!-- Sequence Chain Container -->
+<div class="space-y-0 relative">
+<!-- Post 1 (Root Card) -->
+<article class="bg-graphite-panel p-6 rounded-t relative z-10">
+<div class="flex items-center justify-between pb-4">
+<div class="flex items-center gap-3">
+<span class="font-label-mono text-data-mono-xs px-2 py-0.5 rounded bg-ash-rise text-slate-mute">
+                ROOT_POST 01/03
+              </span>
+<span class="font-label-ui text-label-ui text-dim-veil">Primary Anchor</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-1 text-dim-veil hover:text-foam-ink transition-colors" title="Post settings" type="button">
+<span class="material-symbols-outlined text-[16px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Main Input Field -->
+<div class="w-full">
+<label class="sr-only" for="post-content-1">Thread Root Content</label>
+<textarea class="w-full bg-ash-rise text-foam-ink font-body-editorial text-body-editorial p-4 rounded focus:outline-none focus:ring-2 focus:ring-ember focus:ring-offset-2 focus:ring-offset-graphite-panel resize-y leading-relaxed transition-all placeholder:text-dim-veil" id="post-content-1" maxlength="500" placeholder="Mengurai pola thread viral tanpa clickbait — data dulu, opini kemudian. 1/3" rows="6">The architectural transition from generic SaaS white space to tactical, instrument-grade editorial systems is not merely an aesthetic preference. It represents a fundamental reckoning with utility. 
+
+When software respects viewport density and treats data telemetry with editorial hierarchy, operator focus compounds exponentially.</textarea>
+</div>
+<!-- Post 1 Telemetry Bar -->
+<div class="mt-4 pt-3 flex flex-wrap items-center justify-between gap-2 text-dim-veil font-label-mono text-label-mono">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1.5">
+<span class="text-foam-ink font-medium">326</span><span class="text-dim-veil">/500 CHAR</span>
+</span>
+<span class="h-2.5 w-px bg-hairline"></span>
+<span>2 PARAGRAPHS</span>
+<span class="h-2.5 w-px bg-hairline"></span>
+<span>~28 SEC READ</span>
+</div>
+<div class="flex items-center gap-1.5 text-healthy-lime bg-healthy-lime/10 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[12px]">check_circle</span>
+<span class="text-data-mono-xs font-label-mono tracking-wide">OPTIMAL_DENSITY</span>
+</div>
+</div>
+<!-- Embedded Media Unit -->
+<div class="mt-5 space-y-2">
+<span class="font-label-ui text-label-ui text-slate-mute block">Attached Asset (1/1)</span>
+<div class="flex items-center justify-between p-3 bg-ash-rise rounded group">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-14 h-14 rounded overflow-hidden flex-shrink-0 bg-graphite-panel relative">
+<img class="w-full h-full object-cover filter grayscale contrast-125" data-alt="Monochrome minimalist architectural rendering with sharp angles, tactile micro-textures, and high contrast shadow patterns in studio dark room lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_dlxTmXySPI-m7g5aWYvV054iLSwZt3J_HSOnG-H8q3W2YGTO06f0zc7FJRRGAckDFDAsueFnqaFTnT3VT7Xj7D_Fbh5PkXobdAriNEyJZALZrJ0KqtJpkRXLPNqLPIic9hAgfKq7aUtfn5sGEKE8YomXtF9Y0eUwY_el5LUBqOwDhLnoyQTyMtW-qoRkXgNwyFll5GCBMvfUG3tUZuXQk3zl5vic4APOnPP0RPBz0dIVTXujnQllzA"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-ui text-label-ui text-foam-ink truncate">editorial_spec_matrix_v2.png</span>
+<span class="font-label-mono text-data-mono-xs text-dim-veil">1440 × 900 PNG — 428 KB</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button class="p-1.5 text-slate-mute hover:text-foam-ink transition-colors" title="Inspect preview" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+<button class="p-1.5 text-slate-mute hover:text-coral-alert transition-colors" title="Detach asset" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- Dynamic Connection Axis Indicator -->
+<div class="relative pl-10 py-1 bg-graphite-panel z-10 flex items-center">
+<div class="absolute left-6 top-0 bottom-0 w-0.5 bg-ash-rise"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-ember -ml-[19px] z-20"></div>
+<span class="font-label-mono text-data-mono-xs text-dim-veil uppercase tracking-wider pl-4">
+            THREAD_CONNECTOR_CADENCE: 45S_STAGGER
+          </span>
+</div>
+<!-- Post 2 (Appended Segment) -->
+<article class="bg-graphite-panel p-6 relative z-10">
+<div class="flex items-center justify-between pb-4">
+<div class="flex items-center gap-3">
+<span class="font-label-mono text-data-mono-xs px-2 py-0.5 rounded bg-ash-rise text-slate-mute">
+                THREAD_SEGMENT 02/03
+              </span>
+<span class="font-label-ui text-label-ui text-dim-veil">Sub-Narrative</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-1 text-dim-veil hover:text-coral-alert transition-colors" title="Remove segment" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</div>
+<div class="w-full">
+<label class="sr-only" for="post-content-2">Thread Segment 2 Content</label>
+<textarea class="w-full bg-ash-rise text-foam-ink font-body-editorial text-body-editorial p-4 rounded focus:outline-none focus:ring-2 focus:ring-ember focus:ring-offset-2 focus:ring-offset-graphite-panel resize-y leading-relaxed transition-all placeholder:text-dim-veil" id="post-content-2" maxlength="500" placeholder="Continue thread argumentation..." rows="4">Notice how telemetry displays strip out decorative gauge rings in favor of precision monospaced values. We do not need animated graphs when a raw fraction and an inline delta state the operational truth.</textarea>
+</div>
+<!-- Post 2 Metrics -->
+<div class="mt-4 pt-3 flex items-center justify-between text-dim-veil font-label-mono text-label-mono">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1.5">
+<span class="text-foam-ink font-medium">214</span><span class="text-dim-veil">/500 CHAR</span>
+</span>
+<span class="h-2.5 w-px bg-hairline"></span>
+<span>1 PARAGRAPH</span>
+</div>
+<span class="text-data-mono-xs text-dim-veil uppercase font-label-mono">INLINE_ATTACHMENTS: 0</span>
+</div>
+</article>
+<!-- Thread Expansion Bar -->
+<div class="bg-graphite-panel p-4 rounded-b flex items-center justify-between">
+<button class="flex items-center gap-2 px-3 py-2 rounded bg-ash-rise text-foam-ink font-label-ui text-label-ui hover:bg-surface-container-high transition-colors focus:outline-none focus:ring-2 focus:ring-ember" type="button">
+<span class="material-symbols-outlined text-[16px] text-ember">add_circle</span>
+<span>Append to Thread (3/3)</span>
+</button>
+<div class="flex items-center gap-2 text-dim-veil font-label-mono text-data-mono-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-mute"></span>
+<span>CAPACITY: 1 SEGMENT REMAINING</span>
+</div>
+</div>
+</div>
+<!-- Cadence & Scheduler Instrument Panel -->
+<section class="bg-graphite-panel p-6 rounded space-y-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-ember text-[18px]">schedule</span>
+<h2 class="font-headline-md text-headline-md text-foam-ink tracking-tight">Cadence Configuration</h2>
+</div>
+<span class="font-label-mono text-data-mono-xs text-slate-mute">DISPATCH_ENGINE_V4</span>
+</div>
+<!-- Mode Toggle Segmented Matrix -->
+<div class="space-y-2">
+<span class="font-label-ui text-label-ui text-slate-mute">Publishing Mode</span>
+<div class="grid grid-cols-3 gap-2 bg-ash-rise p-1.5 rounded">
+<button class="py-2 px-3 rounded text-center font-label-ui text-label-ui text-slate-mute hover:text-foam-ink transition-colors" type="button">
+              Instant Dispatch
+            </button>
+<button class="py-2 px-3 rounded text-center font-label-ui text-label-ui bg-graphite-panel text-foam-ink font-semibold" type="button">
+              Scheduled Cadence
+            </button>
+<button class="py-2 px-3 rounded text-center font-label-ui text-label-ui text-slate-mute hover:text-foam-ink transition-colors" type="button">
+              Autonomous Drip
+            </button>
+</div>
+</div>
+<!-- Schedule Date & Time Precise Inputs -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="font-label-ui text-label-ui text-slate-mute block" for="schedule-date">Dispatch Timestamp (UTC)</label>
+<div class="relative">
+<input class="w-full bg-ash-rise text-foam-ink font-label-mono text-label-mono p-3 rounded focus:outline-none focus:ring-2 focus:ring-ember focus:ring-offset-2 focus:ring-offset-graphite-panel uppercase tracking-wider" id="schedule-date" type="text" value="2024-10-24 16:30 UTC"/>
+<span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-dim-veil pointer-events-none">calendar_today</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-ui text-label-ui text-slate-mute block" for="stagger-window">Reply Stagger Window</label>
+<div class="relative">
+<input class="w-full bg-ash-rise text-foam-ink font-label-mono text-label-mono p-3 rounded focus:outline-none focus:ring-2 focus:ring-ember focus:ring-offset-2 focus:ring-offset-graphite-panel tracking-wider" id="stagger-window" type="text" value="45 Seconds Interval"/>
+<span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-dim-veil pointer-events-none">timer</span>
+</div>
+</div>
+</div>
+<!-- Safety Readout Notice -->
+<div class="p-3.5 bg-ash-rise/80 rounded flex items-start gap-3">
+<span class="material-symbols-outlined text-caution-amber text-[18px] mt-0.5 flex-shrink-0">shield</span>
+<div class="space-y-1">
+<span class="font-label-ui text-label-ui text-foam-ink font-medium block">Rate-Limit Mitigation Active</span>
+<p class="font-body-dense text-body-dense text-slate-mute">
+              A 45-second stagger interval between thread replies guarantees conversational continuity while protecting account reputation against Threads heuristic throttling.
+            </p>
+</div>
+</div>
+<!-- Action Execution Footer -->
+<div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<button class="px-4 py-2.5 rounded bg-ash-rise text-foam-ink font-label-ui text-label-ui hover:bg-surface-container-high transition-colors active:translate-y-px" type="button">
+              Save Draft
+            </button>
+<button class="px-4 py-2.5 rounded text-slate-mute hover:text-foam-ink font-label-ui text-label-ui transition-colors active:translate-y-px" type="button">
+              Preview in Client
+            </button>
+</div>
+<button class="w-full sm:w-auto min-h-[44px] px-6 py-2.5 rounded bg-ember text-umbra-canvas font-semibold font-label-ui text-label-ui hover:opacity-90 active:translate-y-px transition-all flex items-center justify-center gap-2" type="button">
+<span>Schedule Thread (2 Posts)</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</section>
+</div>
+<!-- Right Column: Queue Telemetry & Pipeline Overview (approx 40%) -->
+<aside class="lg:col-span-5 flex flex-col space-y-6">
+<!-- Queue Monitor Container -->
+<div class="bg-graphite-panel rounded p-6 space-y-5">
+<!-- Queue Header -->
+<div class="flex items-center justify-between pb-2">
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-headline-md text-headline-md text-foam-ink tracking-tight">Planned Queue</h2>
+<span class="font-label-mono text-data-mono-xs px-2 py-0.5 rounded bg-ash-rise text-foam-ink">
+                3 STAGED
+              </span>
+</div>
+<p class="font-label-mono text-data-mono-xs text-dim-veil mt-0.5">DISPATCH_SEQUENCE_ACTIVE</p>
+</div>
+<button class="flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-ash-rise text-slate-mute hover:text-foam-ink font-label-mono text-data-mono-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">filter_list</span>
+<span>FILTER DATE</span>
+</button>
+</div>
+<!-- Continuous Item Stream with Open Dividers -->
+<div class="divide-y divide-hairline">
+<!-- Queue Item 1 -->
+<div class="py-4 space-y-3 group hover:bg-ash-rise/40 -mx-6 px-6 transition-colors">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 font-label-mono text-data-mono-xs">
+<span class="text-foam-ink font-medium">11:30 UTC</span>
+<span class="text-dim-veil">—</span>
+<span class="text-slate-mute">THREAD (1/3)</span>
+</div>
+<span class="font-label-mono text-data-mono-xs px-2 py-0.5 rounded bg-healthy-lime/10 text-healthy-lime uppercase tracking-wider">
+                LOCKED
+              </span>
+</div>
+<p class="font-body-dense text-body-dense text-foam-ink line-clamp-2">
+              Why editorial density outperforms whitespace inflation in B2B tools: when high-frequency creators interact with...
+            </p>
+<div class="flex items-center justify-between font-label-mono text-data-mono-xs text-dim-veil pt-1">
+<span>EST. IMPR: 4.8K</span>
+<div class="flex items-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
+<button class="hover:text-foam-ink transition-colors p-1" title="Adjust time" type="button">
+<span class="material-symbols-outlined text-[14px]">edit_calendar</span>
+</button>
+<button class="hover:text-foam-ink transition-colors p-1" title="Reorder post" type="button">
+<span class="material-symbols-outlined text-[14px]">drag_indicator</span>
+</button>
+<button class="hover:text-coral-alert transition-colors p-1" title="Unqueue post" type="button">
+<span class="material-symbols-outlined text-[14px]">pause</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Queue Item 2 -->
+<div class="py-4 space-y-3 group hover:bg-ash-rise/40 -mx-6 px-6 transition-colors">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 font-label-mono text-data-mono-xs">
+<span class="text-foam-ink font-medium">14:15 UTC</span>
+<span class="text-dim-veil">—</span>
+<span class="text-slate-mute">MEDIA POST</span>
+</div>
+<span class="font-label-mono text-data-mono-xs px-2 py-0.5 rounded bg-caution-amber/10 text-caution-amber uppercase tracking-wider">
+                STAGED
+              </span>
+</div>
+<p class="font-body-dense text-body-dense text-foam-ink line-clamp-2">
+              Five design tokens that define tactile software feeling: 1px hairlines over blurry dropshadows, monospace data parity...
+            </p>
+<div class="flex items-center justify-between font-label-mono text-data-mono-xs text-dim-veil pt-1">
+<span>ATTACHMENT: MATRIX.PNG</span>
+<div class="flex items-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
+<button class="hover:text-foam-ink transition-colors p-1" title="Adjust time" type="button">
+<span class="material-symbols-outlined text-[14px]">edit_calendar</span>
+</button>
+<button class="hover:text-foam-ink transition-colors p-1" title="Reorder post" type="button">
+<span class="material-symbols-outlined text-[14px]">drag_indicator</span>
+</button>
+<button class="hover:text-coral-alert transition-colors p-1" title="Unqueue post" type="button">
+<span class="material-symbols-outlined text-[14px]">pause</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Queue Item 3 -->
+<div class="py-4 space-y-3 group hover:bg-ash-rise/40 -mx-6 px-6 transition-colors">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 font-label-mono text-data-mono-xs">
+<span class="text-foam-ink font-medium">18:00 UTC</span>
+<span class="text-dim-veil">—</span>
+<span class="text-slate-mute">SINGLE POST</span>
+</div>
+<span class="font-label-mono text-data-mono-xs px-2 py-0.5 rounded bg-slate-mute/10 text-slate-mute uppercase tracking-wider">
+                PENDING
+              </span>
+</div>
+<p class="font-body-dense text-body-dense text-foam-ink line-clamp-2">
+              Evening recap: community questions on token architecture, font pair scaling, and programmatic distribution quotas...
+            </p>
+<div class="flex items-center justify-between font-label-mono text-data-mono-xs text-dim-veil pt-1">
+<span>REPLY_WATCH: ON</span>
+<div class="flex items-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
+<button class="hover:text-foam-ink transition-colors p-1" title="Adjust time" type="button">
+<span class="material-symbols-outlined text-[14px]">edit_calendar</span>
+</button>
+<button class="hover:text-foam-ink transition-colors p-1" title="Reorder post" type="button">
+<span class="material-symbols-outlined text-[14px]">drag_indicator</span>
+</button>
+<button class="hover:text-coral-alert transition-colors p-1" title="Unqueue post" type="button">
+<span class="material-symbols-outlined text-[14px]">pause</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Quota Impact Gauge & Card -->
+<div class="mt-4 p-4 rounded bg-ash-rise space-y-3">
+<div class="flex items-center justify-between">
+<span class="font-label-ui text-label-ui text-foam-ink font-medium">Dispatch Quota Consumption</span>
+<span class="font-label-mono text-data-mono-xs text-ember font-semibold">-2 UNITS</span>
+</div>
+<!-- Micro Quota Visualization Bar -->
+<div class="w-full bg-graphite-panel h-1.5 rounded-full overflow-hidden flex">
+<div class="bg-healthy-lime h-full w-[86.8%]"></div>
+<div class="bg-ember h-full w-[0.8%]"></div>
+</div>
+<div class="flex items-center justify-between font-label-mono text-data-mono-xs text-dim-veil">
+<span>USED: 217 / 250</span>
+<span class="text-foam-ink">REMAINING: 31 UNITS</span>
+</div>
+<p class="font-body-dense text-data-mono-xs text-slate-mute pt-1">
+            This pending sequence will consume 2 units of your remaining daily Threads API dispatch limit.
+          </p>
+</div>
+</div>
+<!-- Studio Inspiration / Live Editorial References -->
+<div class="bg-graphite-panel rounded p-6 space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-foam-ink tracking-tight">Recent High-Reach Snippet</h3>
+<span class="font-label-mono text-data-mono-xs text-healthy-lime">+18.4% ER</span>
+</div>
+<div class="p-4 bg-ash-rise rounded space-y-3">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover grayscale" data-alt="Editorial portrait of a typography curator in deep natural lighting against minimal architectural concrete studio backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqAuR43Qx6gT0czyVLupwIUZ2jLSEEE3AeEx1XjzrbTCnSGxunVbTzLHfLszIOx27F6lJdgLJY5enMHs90oaKfIJdGo2_RCywyjYft75GY_K-Ibco3mni8JtDsX3bXZgFzU_hJpFveGwF1-4To50VhQN7SFs0KPtxcOs33iuqZ39jXZIXyqqeY9BdQxGNEoAgJ7yhOmStZx8ppwgPeYhBSJ7M5L_9fQGenEfZU-HEjvFpGlbxv_HhF7Q"/>
+<span class="font-label-mono text-data-mono-xs text-foam-ink">@bramantyo.threads</span>
+<span class="font-label-mono text-data-mono-xs text-dim-veil">• 2d ago</span>
+</div>
+<p class="font-body-dense text-body-dense text-slate-mute italic">
+            "Software that looks like a precision instrument makes the operator feel like an artisan rather than a content cog."
+          </p>
+<div class="flex items-center gap-4 font-label-mono text-data-mono-xs text-dim-veil">
+<span>1,420 REPLIES</span>
+<span>4,890 QUOTES</span>
+<span>98.2K VIEWS</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<script>
+  // Simple reactive character counter for Root post
+  (function() {
+    const rootInput = document.getElementById('post-content-1');
+    if (!rootInput) return;
+    
+    rootInput.addEventListener('input', function() {
+      const len = this.value.length;
+      const countDisplay = this.closest('article').querySelector('.font-label-mono .font-medium');
+      if (countDisplay) {
+        countDisplay.textContent = len;
+        if (len > 450) {
+          countDisplay.classList.add('text-caution-amber');
+        } else {
+          countDisplay.classList.remove('text-caution-amber');
+        }
+      }
+    });
+  })();
+</script></main>
+</div>
+<script>
+    // Global shortcut handler for Cmd+N / Ctrl+N to trigger composition
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        const composeBtn = document.querySelector('button:has(.material-symbols-outlined)');
+        if (composeBtn) composeBtn.focus();
+      }
+    });
+  </script>
+</body></html>

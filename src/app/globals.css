@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0d0d0e;
+  color: #f4f4f5;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  overscroll-behavior: none;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1e1e21 #0d0d0e;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0d0d0e;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e1e21;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #70707a;
+}
+
+::selection {
+  background: #e8633c;
+  color: #0d0d0e;
+}
+
+/* Aturan konten memudar (dari desain Stitch) agar teks "editorial" rapi. */
+main > :first-child {
+  margin-top: 0 !important;
+}
+main > :last-child {
+  margin-bottom: 0 !important;
+}

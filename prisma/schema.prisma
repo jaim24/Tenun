@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PostStatus {
+  DRAFT
+  SCHEDULED
+  PROCESSING
+  PUBLISHED
+  FAILED
+  CANCELLED
+}
+
+enum ReplyStatus {
+  PENDING
+  APPROVED
+  SENT
+  SKIPPED
+  FAILED
+}
+
+model Account {
+  id                String    @id @default(cuid())
+  threadsUserId     String    @unique
+  username          String
+  name              String?
+  profilePictureUrl String?
+  accessToken       String
+  tokenKind         String    @default("LONG")
+  tokenExpiresAt    DateTime
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  posts      ThreadPost[]
+  replyDrafts ReplyDraft[]
+  replyLogs  ReplyLog[]
+}
+
+model ThreadPost {
+  id                String     @id @default(cuid())
+  accountId         String?
+  account           Account?   @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  text              String
+  imageUrl          String?
+  scheduledFor      DateTime?
+  status            PostStatus @default(DRAFT)
+  creationId        String?
+  publishedMediaId  String?
+  permalink         String?
+  error             String?
+  publishedAt       DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  @@index([status])
+  @@index([scheduledFor])
+}
+
+model Keyword {
+  id               String         @id @default(cuid())
+  text             String
+  mode             String         @default("KEYWORD")
+  isActive         Boolean        @default(true)
+  autoReplyEnabled Boolean        @default(false)
+  replyTemplate    String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  matches SearchMatch[]
+
+  @@unique([text, mode])
+}
+
+model SearchMatch {
+  id         String     @id @default(cuid())
+  keywordId  String
+  keyword    Keyword    @relation(fields: [keywordId], references: [id], onDelete: Cascade)
+  threadId   String
+  username   String?
+  text       String?
+  permalink  String?
+  postedAt   DateTime?
+  createdAt  DateTime   @default(now())
+  replyDraft ReplyDraft?
+
+  @@unique([keywordId, threadId])
+}
+
+model ReplyDraft {
+  id              String       @id @default(cuid())
+  accountId       String?
+  account         Account?     @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  keywordId       String?
+  matchId         String?      @unique
+  match           SearchMatch? @relation(fields: [matchId], references: [id], onDelete: SetNull)
+  targetThreadId  String
+  targetUsername  String?
+  targetText      String?
+  targetPermalink String?
+  suggestedText   String
+  status          ReplyStatus  @default(PENDING)
+  creationId      String?
+  permalink       String?
+  error           String?
+  repliedAt       DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([status])
+}
+
+model ReplyLog {
+  id             String   @id @default(cuid())
+  accountId      String?
+  account        Account? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  replyMediaId   String
+  targetThreadId String
+  targetUsername String?
+  text           String
+  permalink      String?
+  createdAt      DateTime @default(now())
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  type      String
+  message   String
+  meta      String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model AppConfig {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model AffiliateLink {
+  id        String   @id @default(cuid())
+  label     String
+  url       String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
