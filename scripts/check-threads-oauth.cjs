@@ -5,6 +5,7 @@ const ts = require('typescript');
 
 const calls = [];
 let failRequest = false;
+let profileId = '28470027815972601';
 const api = {};
 const source = fs.readFileSync(require('node:path').join(__dirname, '../src/lib/threads.ts'), 'utf8');
 vm.runInNewContext(ts.transpileModule(source, {
@@ -18,6 +19,7 @@ vm.runInNewContext(ts.transpileModule(source, {
   fetch: async (url, options) => {
     calls.push({ url: new URL(url), options });
     if (failRequest) return { ok: false, status: 400, text: async () => JSON.stringify({ error: { message: 'Test OAuth failure', code: 190 } }) };
+    if (new URL(url).pathname.endsWith('/me')) return { ok: true, text: async () => JSON.stringify({ id: profileId }) };
     return { ok: true, text: async () => JSON.stringify({ access_token: 'test-token', user_id: '123', expires_in: 5184000 }) };
   },
 });
@@ -34,6 +36,16 @@ vm.runInNewContext(ts.transpileModule(source, {
   assert.equal(calls[1].url.searchParams.get('grant_type'), 'th_exchange_token');
   assert.equal(calls[1].url.searchParams.get('access_token'), 'short-token');
   assert.equal(calls[1].options.cache, 'no-store');
+  const profile = await api.getMe('test-token');
+  assert.equal(profile.id, '28470027815972601');
+  profileId = Number(profileId);
+  await assert.rejects(() => api.getMe('test-token'), error => error.code === 'PROFILE_ID');
+  await api.publishContainer(profile.id, 'test-token', 'container-id');
+  const publish = calls.at(-1);
+  assert.equal(publish.url.pathname, '/v1.0/28470027815972601/threads_publish');
+  assert.equal(publish.options.method, 'POST');
+  assert.equal(publish.options.body.get('creation_id'), 'container-id');
+  assert.equal(publish.options.body.get('access_token'), 'test-token');
   failRequest = true;
   for (const request of [() => api.exchangeCode('test-code'), () => api.exchangeForLongLivedToken('short-token')]) {
     await assert.rejects(request, error => {

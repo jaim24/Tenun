@@ -121,10 +121,14 @@ export async function exchangeForLongLivedToken(shortToken: string): Promise<{ a
 }
 
 export async function getMe(accessToken: string) {
-  return graphRequest("me", {
+  const profile = await graphRequest("me", {
     fields: "id,username,name,threads_profile_picture_url",
     access_token: accessToken,
   });
+  if (typeof profile.id !== "string" || !/^\d+$/.test(profile.id)) {
+    throw new ApiError("Respons profil Threads tidak berisi ID string yang valid", "PROFILE_ID");
+  }
+  return profile;
 }
 
 // --- Konten ---
@@ -149,7 +153,7 @@ export async function publishContainer(userId: string, accessToken: string, crea
   const data = await graphRequest(`${userId}/threads_publish`, {
     creation_id: creationId,
     access_token: accessToken,
-  });
+  }, { method: "POST", form: true });
   return data as { id: string; permalink?: string };
 }
 

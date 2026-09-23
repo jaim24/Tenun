@@ -16,7 +16,7 @@ export async function GET(req: Request) {
 
   let stage = "exchange_code";
   try {
-    const { access_token: shortToken, user_id } = await exchangeCode(code);
+    const { access_token: shortToken } = await exchangeCode(code);
     if (!shortToken) throw new Error("Respons pertukaran kode tidak berisi access_token");
     stage = "exchange_long_lived_token";
     const long = await exchangeForLongLivedToken(shortToken);
@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     const me = await getMe(long.access_token);
 
     stage = "save_account";
-    const accountId = String(user_id ?? me.id);
+    const accountId = me.id;
     const exists = await prisma.account.findUnique({ where: { threadsUserId: accountId } });
 
     const data = {
