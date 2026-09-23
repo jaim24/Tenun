@@ -62,9 +62,9 @@ Rekomendasi: **Gemini** sebagai default (kuota + kualitas), **Groq** kalau butuh
 
 Cron endpoint dipanggil via scheduler (pilih salah satu):
 
-- **Upstash Cron** (disarankan gratis): `https://<app>/api/cron/publish?token=<CRON_SECRET>` setiap menit; `/api/cron/search?token=<CRON_SECRET>` setiap 15–30 menit.
-- **Vercel Cron**: di `vercel.json` — `crons: [{ "path": "/api/cron/publish", "schedule": "* * * * *" }]` (Hobby: minimal 1x/hari — cukup bila jadwal dalam satuan jam).
-- **GitHub Actions**: `schedule` workflow memanggil kedua endpoint via `curl`.
+- **GitHub Actions** (disarankan, gratis di Hobby): workflow `.github/workflows/cron-publish.yml` (`*/30`) & `cron-search.yml` (`*/10`) memanggil kedua endpoint via `curl`. Tambah **secrets.CRON_SECRET** di repo (nilai sama dengan env `CRON_SECRET` di Vercel).
+- **Upstash Cron**: `https://<app>/api/cron/publish?token=<CRON_SECRET>` setiap menit; `/api/cron/search?token=<CRON_SECRET>` setiap 15–30 menit.
+- **Vercel Cron**: di variant `vercel.json` — Hobby dibatasi **maksimal 1x/hari**, hanya cukup bila jadwal satuan hari.
 
 Endpoint menolak tanpa token yang cocok dengan `CRON_SECRET`.
 

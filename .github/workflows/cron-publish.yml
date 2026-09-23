@@ -1,0 +1,12 @@
+name: Tenun Cron - Publish
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish due posts
+        run: curl -fsS "https://tenun-cms.vercel.app/api/cron/publish?token=${{ secrets.CRON_SECRET }}"

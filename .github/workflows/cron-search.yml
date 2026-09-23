@@ -1,0 +1,12 @@
+name: Tenun Cron - Search
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run keyword search
+        run: curl -fsS "https://tenun-cms.vercel.app/api/cron/search?token=${{ secrets.CRON_SECRET }}"
