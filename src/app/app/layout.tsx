@@ -44,7 +44,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           scheduledCount={scheduledCount}
           quota={quota}
         />
-        <div className="pl-60 flex flex-col min-h-screen">
+        <div className="md:pl-60 flex flex-col min-h-screen">
           <Topbar adminEmail={user.email} profilePictureUrl={account?.profilePictureUrl ?? null} username={account?.username} />
           <main className="flex-1 p-6 max-w-[1440px] w-full mx-auto space-y-6">{children}</main>
         </div>
