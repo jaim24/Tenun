@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import Icon from "@/components/icon";
 import { LogoMark } from "@/components/decor";
 
@@ -23,6 +24,11 @@ export default function Sidebar({
   quota: Quota | null;
 }) {
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  // Tutup drawer setiap pindah halaman
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const links = [
     { href: "/app", label: "Overview", icon: "dashboard" as const },
@@ -51,7 +57,32 @@ export default function Sidebar({
   }
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-60 bg-graphite-panel border-r border-hairline z-50 flex flex-col justify-between select-none">
+    <>
+      {/* Tombol hamburger — hanya tampil di mobile */}
+      <button
+        type="button"
+        onClick={() => setMobileOpen(true)}
+        aria-label="Buka navigasi"
+        className="md:hidden fixed top-3 left-3 z-[60] p-2 rounded-md bg-graphite-panel border border-hairline text-foam-ink shadow-lg"
+      >
+        <Icon name="menu" className="text-[20px]" />
+      </button>
+
+      {/* Backdrop — hanya mobile saat drawer terbuka */}
+      {mobileOpen && (
+        <button
+          type="button"
+          aria-label="Tutup navigasi"
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden fixed inset-0 z-40 bg-black/60"
+        />
+      )}
+
+      <aside
+        className={`fixed left-0 top-0 bottom-0 w-60 bg-graphite-panel border-r border-hairline z-50 flex flex-col justify-between select-none transition-transform duration-300 ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
+      >
       <div className="flex flex-col min-h-0">
         <div className="h-14 px-4 flex items-center justify-between border-b border-hairline shrink-0">
           <Link href="/app" className="flex items-center gap-2.5">
@@ -62,6 +93,14 @@ export default function Sidebar({
             <span className="w-1.5 h-1.5 rounded-full bg-ember animate-breathing-dot" />
             <span className="font-mono text-[10px] tracking-wider text-slate-mute uppercase">Live</span>
           </div>
+          <button
+            type="button"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Tutup navigasi"
+            className="md:hidden p-1.5 -mr-1 text-slate-mute hover:text-foam-ink transition-colors"
+          >
+            <Icon name="close" className="text-[20px]" />
+          </button>
         </div>
 
         <div className="px-4 py-3 border-b border-hairline bg-graphite-panel shrink-0">
@@ -147,5 +186,6 @@ export default function Sidebar({
         </div>
       </div>
     </aside>
+    </>
   );
 }
