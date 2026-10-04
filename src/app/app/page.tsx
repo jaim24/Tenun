@@ -8,11 +8,12 @@ import { clockUtc, formatUtc, inHumanized, timeAgo } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-const todayStart = new Date();
-todayStart.setUTCHours(0, 0, 0, 0);
-const dayAgo = new Date(Date.now() - 24 * 3600 * 1000);
-
 export default async function DashboardPage() {
+  // Dihitung per request — bila di level modul, tanggal basi di instance warm
+  // dan metrik "Hari Ini" salah setelah lewat tengah malam.
+  const todayStart = new Date();
+  todayStart.setUTCHours(0, 0, 0, 0);
+  const dayAgo = new Date(Date.now() - 24 * 3600 * 1000);
   const [
     account,
     postsToday,
