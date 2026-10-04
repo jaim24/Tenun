@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { fail, handleRoute, ok, readJson } from "@/lib/http";
+import { fail, handleRoute, ok, parseLimit, readJson } from "@/lib/http";
 import { logActivity } from "@/lib/activity";
 
 export const dynamic = "force-dynamic";
@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const GET = handleRoute(async (req) => {
   const url = new URL(req.url);
   const status = url.searchParams.get("status");
-  const limit = Math.min(Number(url.searchParams.get("limit") ?? 100), 300);
+  const limit = parseLimit(url.searchParams.get("limit"), 100, 300);
 
   const statusFilter = status
     ? {
