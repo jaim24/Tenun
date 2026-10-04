@@ -40,7 +40,6 @@ export default async function RepliesPage() {
         createdAt: true,
       },
     }),
-    prisma.replyLog.findMany({ orderBy: { createdAt: "desc" }, take: 50 }),
   ]);
 
   return (

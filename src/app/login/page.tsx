@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 import { LogoMark, MotifLines } from "@/components/decor";
 import LoginForm from "./login-form";
 
@@ -14,6 +15,13 @@ export default async function LoginPage({
   if (user) redirect("/app");
 
   const { next } = await searchParams;
+
+  // Statistik real (agregat, aman ditampilkan publik)
+  const [publishedCount, sentReplies, pendingDrafts] = await Promise.all([
+    prisma.threadPost.count({ where: { status: "PUBLISHED" } }),
+    prisma.replyLog.count({ where: { result: "SENT" } }),
+    prisma.replyDraft.count({ where: { status: "PENDING" } }),
+  ]);
 
   return (
     <main className="w-full min-h-screen bg-umbra-canvas flex flex-col justify-center items-center p-4 sm:p-6 lg:p-10">
@@ -57,26 +65,26 @@ export default async function LoginPage({
             <div className="grid grid-cols-3 gap-3 p-4 rounded-lg bg-ash-rise/50 border border-hairline backdrop-blur-sm max-w-lg">
               <div>
                 <span className="font-mono text-[10px] sm:text-[11px] text-dim-veil block uppercase tracking-wider">
-                  Terdispat
+                  Terbit
                 </span>
                 <span className="font-mono text-base sm:text-lg font-medium text-foam-ink mt-0.5 block">
-                  —
+                  {publishedCount}
                 </span>
               </div>
               <div className="border-l border-hairline pl-3">
                 <span className="font-mono text-[10px] sm:text-[11px] text-dim-veil block uppercase tracking-wider">
-                  Kuota
+                  Balasan
                 </span>
                 <span className="font-mono text-base sm:text-lg font-medium text-foam-ink mt-0.5 block">
-                  —
+                  {sentReplies}
                 </span>
               </div>
               <div className="border-l border-hairline pl-3">
                 <span className="font-mono text-[10px] sm:text-[11px] text-dim-veil block uppercase tracking-wider">
-                  Mode
+                  Antrean
                 </span>
                 <span className="font-mono text-base sm:text-lg font-medium text-healthy-lime mt-0.5 block">
-                  AJUKAN
+                  {pendingDrafts}
                 </span>
               </div>
             </div>

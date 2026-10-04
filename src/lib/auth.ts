@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { verifySessionToken, createSessionToken, sessionCookieOptions, SESSION_COOKIE } from "./session";
+import crypto from "crypto";
 import { getManagedValue } from "./config";
 
 export { SESSION_COOKIE, sessionCookieOptions, createSessionToken };
@@ -8,7 +9,12 @@ export { SESSION_COOKIE, sessionCookieOptions, createSessionToken };
 export async function verifyCredentials(email: string, password: string): Promise<boolean> {
   const adminEmail = (await getManagedValue("ADMIN_EMAIL")) ?? process.env.ADMIN_EMAIL ?? "admin@tenun.id";
   const adminPassword = (await getManagedValue("ADMIN_PASSWORD")) ?? process.env.ADMIN_PASSWORD ?? "tenun";
-  return email.trim().toLowerCase() === adminEmail.trim().toLowerCase() && password === adminPassword;
+  const emailOk = email.trim().toLowerCase() === adminEmail.trim().toLowerCase();
+  // Perbandingan password constant-time agar timing tidak membocorkan informasi.
+  const a = Buffer.from(password, "utf8");
+  const b = Buffer.from(adminPassword, "utf8");
+  const passwordOk = a.length === b.length && crypto.timingSafeEqual(a, b);
+  return emailOk && passwordOk;
 }
 
 export async function getSessionUser(): Promise<{ email: string } | null> {

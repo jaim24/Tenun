@@ -1,11 +1,13 @@
 import { SignJWT, jwtVerify } from "jose";
+import { requireAuthSecret } from "./secrets";
 
 export const SESSION_COOKIE = "tenun_session";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 hari
 
 export function getAuthSecret(): Uint8Array {
-  const secret = process.env.AUTH_SECRET ?? "tenun-dev-secret-change-me-0123456789";
-  return new TextEncoder().encode(secret);
+  // Fail-fast di production bila AUTH_SECRET belum di-set (lihat lib/secrets.ts).
+  // Tanpa ini, siapa pun bisa menandatangani JWT sesi admin palsu.
+  return new TextEncoder().encode(requireAuthSecret());
 }
 
 export async function createSessionToken(email: string): Promise<string> {

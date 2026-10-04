@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { prisma } from "./db";
+import { requireAuthSecret } from "./secrets";
 
 export type ConfigKind = {
   key: string;
@@ -96,8 +97,9 @@ export const MANAGED_CONFIG: ConfigKind[] = [
 const MANAGED = new Map(MANAGED_CONFIG.map((c) => [c.key, c]));
 
 function encryptionKey(): Buffer {
-  const seed = process.env.AUTH_SECRET ?? "tenun-dev-secret-change-me-0123456789";
-  return crypto.createHash("sha256").update(seed).digest();
+  // Kunci enkripsi diturunkan dari AUTH_SECRET; fail-fast di production bila kosong.
+  // Tanpa ini, secret terenkripsi di DB (ADMIN_PASSWORD, dll) bisa didekripsi publik.
+  return crypto.createHash("sha256").update(requireAuthSecret()).digest();
 }
 
 function encryptValue(plain: string): string {
@@ -204,9 +206,22 @@ export async function listConfigManifest(): Promise<ConfigManifestItem[]> {
   return out;
 }
 
-/** CRON_SECRET efektif (DB → env → default dev). */
+/**
+ * CRON_SECRET efektif (DB → env).
+ * Di production WAJIB di-set — pemanggil harus fail-closed (tolak request)
+ * bila fungsi ini throw. Di development fallback ke default lokal agar
+ * script `npm run cron:*` tetap bisa jalan.
+ */
 export async function getCronSecret(): Promise<string> {
-  return (await getManagedValue("CRON_SECRET")) ?? "dev-cron-secret";
+  const v = await getManagedValue("CRON_SECRET");
+  if (v) return v;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[tenun] CRON_SECRET belum diatur — endpoint /api/cron/* menolak semua request di production. " +
+        "Atur di aplikasi (Settings → Konfigurasi) atau sebagai env di Vercel."
+    );
+  }
+  return "dev-cron-secret";
 }
 
 /** Kredensial Threads efektif. Lempar OAuthConfigError pada kekurangan. */

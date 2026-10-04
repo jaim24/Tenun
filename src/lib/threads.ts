@@ -43,7 +43,7 @@ export function authorizeUrl(state: string): Promise<string> {
 
 async function formRequest(url: string, params: Record<string, string>) {
   const body = new URLSearchParams(params);
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body,
@@ -62,6 +62,25 @@ async function parseJson(res: Response): Promise<any> {
   }
 }
 
+/**
+ * fetch dengan timeout — bila API Meta hang, function serverless tidak ikut
+ * menggantung sampai maxDuration. Timeout default 20 detik.
+ */
+export async function fetchWithTimeout(input: string, init: RequestInit = {}, ms = 20000): Promise<Response> {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(input, { ...init, signal: ctrl.signal });
+  } catch (e) {
+    if (e instanceof Error && e.name === "AbortError") {
+      throw new ApiError("Permintaan ke Threads API timeout", "TIMEOUT", 504);
+    }
+    throw e;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
 export async function graphRequest(
   path: string,
   params: Record<string, string>,
@@ -72,14 +91,14 @@ export async function graphRequest(
   let res: Response;
   if (method === "POST") {
     res = opts.form
-      ? await fetch(url, {
+      ? await fetchWithTimeout(url, {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams(params),
         })
-      : await fetch(`${url}?${new URLSearchParams(params)}`, { method: "POST" });
+      : await fetchWithTimeout(`${url}?${new URLSearchParams(params)}`, { method: "POST" });
   } else {
-    res = await fetch(`${url}?${new URLSearchParams(params)}`);
+    res = await fetchWithTimeout(`${url}?${new URLSearchParams(params)}`);
   }
   const data = await parseJson(res);
   if (!res.ok || data.error) {
@@ -114,7 +133,7 @@ export async function exchangeForLongLivedToken(shortToken: string): Promise<{ a
     client_secret: clientSecret,
     access_token: shortToken,
   });
-  const res = await fetch(`${GRAPH}/access_token?${params}`, { cache: "no-store" });
+  const res = await fetchWithTimeout(`${GRAPH}/access_token?${params}`, { cache: "no-store" });
   const data = await parseJson(res);
   if (!res.ok || data.error) throw new ApiError(data.error?.message ?? "Permintaan token gagal", String(data.error?.code ?? "TOKEN"), res.status);
   return data;
@@ -233,10 +252,43 @@ export async function getMediaInsights(
   }
 }
 
+// --- Refresh token ---
+
+// Token long-lived Threads ±60 hari. Di-refresh otomatis bila sisa < 7 hari
+// setiap kali akun primer diambil, agar fitur tidak mati diam-diam.
+const TOKEN_REFRESH_THRESHOLD_MS = 7 * 24 * 3600 * 1000;
+
+export async function refreshLongLivedToken(accessToken: string): Promise<{ access_token: string; expires_in: number }> {
+  const params = new URLSearchParams({ grant_type: "th_refresh_token", access_token: accessToken });
+  const res = await fetchWithTimeout(`${GRAPH}/refresh_access_token?${params}`, { cache: "no-store" }, 20000);
+  const data = await parseJson(res);
+  if (!res.ok || data.error) throw new ApiError(data.error?.message ?? "Gagal me-refresh token", String(data.error?.code ?? "TOKEN_REFRESH"), res.status);
+  return data;
+}
+
 // --- Akun aktif ---
 
 export async function getPrimaryAccount(prisma: any): Promise<any> {
-  return prisma.account.findFirst({ orderBy: { createdAt: "asc" } });
+  const account = await prisma.account.findFirst({ orderBy: { createdAt: "asc" } });
+  if (!account?.accessToken) return account;
+  const expiresAt = account.tokenExpiresAt ? new Date(account.tokenExpiresAt).getTime() : 0;
+  if (expiresAt - Date.now() > TOKEN_REFRESH_THRESHOLD_MS) return account;
+  try {
+    const refreshed = await refreshLongLivedToken(account.accessToken);
+    if (!refreshed.access_token) return account;
+    return await prisma.account.update({
+      where: { id: account.id },
+      data: {
+        accessToken: refreshed.access_token,
+        tokenExpiresAt: new Date(Date.now() + (refreshed.expires_in ?? 5184000) * 1000),
+      },
+    });
+  } catch (e) {
+    // Refresh gagal (mis. token sudah mati) → pakai token lama; biarkan
+    // pemanggil menangani error API seperti biasa.
+    console.error("[tenun] Gagal me-refresh token Threads:", e instanceof Error ? e.message : e);
+    return account;
+  }
 }
 
 export function requireAccount<T>(account: T): asserts account is NonNullable<T> {

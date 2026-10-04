@@ -9,11 +9,28 @@ export const maxDuration = 60;
 export async function GET(req: Request) {
   if (!(await isCronAuthorized(req))) return fail("Unauthorized", 401);
 
-  const due = await prisma.threadPost.findMany({
-    where: { status: "SCHEDULED", scheduledFor: { lte: new Date() } },
+  // Klaim atomik per baris: updateMany dengan syarat status hanya berhasil
+  // bila baris masih SCHEDULED (atau PROCESSING basi >10 mnt dari run yang
+  // crash). Dua run cron yang overlap tidak akan memproses postingan yang sama.
+  const now = new Date();
+  const staleBefore = new Date(now.getTime() - 10 * 60 * 1000);
+  const claimable = {
+    scheduledFor: { lte: now },
+    OR: [{ status: "SCHEDULED" }, { status: "PROCESSING", updatedAt: { lt: staleBefore } }],
+  } as const;
+  const candidates = await prisma.threadPost.findMany({
+    where: claimable,
     orderBy: { scheduledFor: "asc" },
     take: 10,
   });
+  const due: typeof candidates = [];
+  for (const post of candidates) {
+    const claimed = await prisma.threadPost.updateMany({
+      where: { id: post.id, ...claimable },
+      data: { status: "PROCESSING", error: null },
+    });
+    if (claimed.count > 0) due.push(post);
+  }
 
   const results = [];
   for (const post of due) {

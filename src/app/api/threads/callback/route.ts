@@ -1,17 +1,35 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { OAUTH_STATE_COOKIE } from "./auth";
 import { prisma } from "@/lib/db";
 import { logActivity } from "@/lib/activity";
 import { ApiError, exchangeCode, exchangeForLongLivedToken, getMe } from "@/lib/threads";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
   const error = url.searchParams.get("error");
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
 
+  // Verifikasi state OAuth (anti-CSRF): callback wajib membawa state yang
+  // sama dengan cookie httpOnly. Cookie sekali pakai — dihapus di semua exit.
+  const clearState = (res: NextResponse) => {
+    res.cookies.delete(OAUTH_STATE_COOKIE);
+    return res;
+  };
+  const state = url.searchParams.get("state");
+  const expectedState = req.cookies.get(OAUTH_STATE_COOKIE)?.value;
+  if (!state || !expectedState || state !== expectedState) {
+    await logActivity("AUTH", "Callback OAuth ditolak: state tidak valid (kemungkinan CSRF)");
+    return clearState(
+      NextResponse.redirect(
+        `${appUrl}/app/settings?connected=error&reason=${encodeURIComponent("Sesi OAuth tidak valid, silakan coba lagi")}`
+      )
+    );
+  }
+
   if (error || !code) {
     await logActivity("AUTH", `Koneksi Threads dibatalkan (${error ?? "no_code"})`);
-    return NextResponse.redirect(`${appUrl}/app/settings?connected=denied`);
+    return clearState(NextResponse.redirect(`${appUrl}/app/settings?connected=denied`));
   }
 
   let stage = "exchange_code";
@@ -47,7 +65,7 @@ export async function GET(req: Request) {
 
     await logActivity("AUTH", `Akun Threads @${data.username} berhasil terhubung`, { id: accountId });
 
-    return NextResponse.redirect(`${appUrl}/app/settings?connected=ok`);
+    return clearState(NextResponse.redirect(`${appUrl}/app/settings?connected=ok`));
   } catch (e) {
     const message = e instanceof ApiError ? e.message : e instanceof Error ? e.message : "Gagal bertukar kode";
     const diagnostic = {
@@ -57,6 +75,6 @@ export async function GET(req: Request) {
     };
     console.error("[threads-oauth]", diagnostic);
     await logActivity("ERROR", `Gagal konek Threads [${stage}]: ${message}`, diagnostic);
-    return NextResponse.redirect(`${appUrl}/app/settings?connected=error&reason=${encodeURIComponent(message)}`);
+    return clearState(NextResponse.redirect(`${appUrl}/app/settings?connected=error&reason=${encodeURIComponent(message)}`));
   }
 }
