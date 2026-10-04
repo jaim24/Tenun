@@ -18,7 +18,6 @@ export default function Topbar({
 
   useEffect(() => {
     let active = true;
-    let last = 0;
     const tick = async () => {
       try {
         const start = performance.now();
@@ -26,23 +25,26 @@ export default function Topbar({
         const took = Math.round(performance.now() - start);
         if (active && res.ok) setLatency(`${took}ms`);
         const now = new Date().toISOString().slice(0, 16).replace("T", " ");
-        setLogged(now);
-        last = took;
-        void last;
+        if (active) setLogged(now);
       } catch {
         /* diam */
       }
     };
     tick();
-    const id = setInterval(tick, 30000);
+    // Tanpa interval 30 detik (membangunkan serverless terus-menerus):
+    // cek ulang hanya saat tab kembali terlihat.
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tick();
+    };
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       active = false;
-      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
 
   return (
-    <header className="h-14 bg-graphite-panel/90 backdrop-blur-md border-b border-hairline sticky top-0 z-40 px-6 flex items-center justify-between">
+    <header className="h-14 bg-graphite-panel/90 backdrop-blur-md border-b border-hairline sticky top-0 z-40 pl-14 pr-4 md:px-6 flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 font-mono text-[11px] text-slate-mute">
           <span className="w-2 h-2 rounded-full bg-ember animate-breathing-dot" />
@@ -66,10 +68,6 @@ export default function Topbar({
           <Icon name="add" className="text-[16px]" />
           <span>Siaran Baru</span>
         </Link>
-        <span className="h-3 w-px bg-hairline" />
-        <button className="p-1.5 text-slate-mute hover:text-foam-ink transition-colors" title="Notifikasi" type="button">
-          <Icon name="notifications" className="text-[18px]" />
-        </button>
         {profilePictureUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img alt={username ?? "avatar"} className="w-7 h-7 rounded-full object-cover ring-1 ring-hairline" src={profilePictureUrl} />
