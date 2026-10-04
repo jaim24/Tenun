@@ -5,6 +5,15 @@ import { logActivity } from "@/lib/activity";
 export const dynamic = "force-dynamic";
 
 export const GET = handleRoute(async () => {
+  // Match yang belum punya draf balasan, per keyword.
+  const unmatchedRows = await prisma.searchMatch.groupBy({
+    by: ["keywordId"],
+    _count: { _all: true },
+    where: { replyDraft: null },
+  });
+  const unmatchedMap: Record<string, number> = {};
+  for (const row of unmatchedRows) unmatchedMap[row.keywordId] = row._count._all;
+
   const keywords = await prisma.keyword.findMany({
     orderBy: { createdAt: "desc" },
     include: {
@@ -25,7 +34,8 @@ export const GET = handleRoute(async () => {
     keywords: keywords.map((k) => ({
       ...k,
       pendingReplies: pendingMap[k.id] ?? 0,
-      unmatched: k._count.matches,
+      totalMatches: k._count.matches,
+      unmatched: unmatchedMap[k.id] ?? 0,
     })),
   };
 });
