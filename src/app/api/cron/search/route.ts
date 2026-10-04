@@ -15,6 +15,19 @@ export async function GET(req: Request) {
     return ok({ window: "search", skipped: "no-account" } as Record<string, unknown>);
   }
 
+  // Jendela "baru": sejak run terakhir yang sukses (tersimpan di AppConfig),
+  // bukan 60 detik kaku — bila satu run terputus, match yang terlewat tetap
+  // diproses di run berikutnya (draf didedup via replyDraft per match).
+  const LAST_RUN_KEY = "SEARCH_CRON_LAST_RUN";
+  let windowStart = new Date(Date.now() - 60000);
+  try {
+    const row = await prisma.appConfig.findUnique({ where: { key: LAST_RUN_KEY } });
+    const parsed = row ? new Date(row.value) : null;
+    if (parsed && !Number.isNaN(parsed.getTime())) windowStart = parsed;
+  } catch {
+    /* abaikan, pakai default 60 detik */
+  }
+
   const keywords = await prisma.keyword.findMany({ where: { isActive: true } });
   const summary: Array<{ keyword: string; scanned: number; newMatches: number; drafts: number }> = [];
   let totalNew = 0;
@@ -51,9 +64,9 @@ export async function GET(req: Request) {
         update: {},
       });
 
-      if (match.createdAt.getTime() > Date.now() - 60000) newMatches += 1;
+      if (match.createdAt.getTime() > windowStart.getTime()) newMatches += 1;
 
-      if (keyword.autoReplyEnabled && keyword.replyTemplate && match.createdAt.getTime() > Date.now() - 60000) {
+      if (keyword.autoReplyEnabled && keyword.replyTemplate && match.createdAt.getTime() > windowStart.getTime()) {
         const exists = await prisma.replyDraft.findUnique({ where: { matchId: match.id } });
         if (!exists && keyword.replyTemplate) {
           await prisma.replyDraft.create({
@@ -65,7 +78,10 @@ export async function GET(req: Request) {
               targetUsername: match.username,
               targetText: match.text,
               targetPermalink: match.permalink,
-              suggestedText: keyword.replyTemplate.replace("{username}", `@${match.username ?? ""}`).slice(0, 500),
+              suggestedText: keyword.replyTemplate
+                .replaceAll("{username}", `@${match.username ?? ""}`)
+                .replaceAll("{keyword}", keyword.text)
+                .slice(0, 500),
               status: "PENDING",
             },
           });
@@ -78,6 +94,12 @@ export async function GET(req: Request) {
     summary.push({ keyword: keyword.text, scanned: posts.length, newMatches, drafts });
     await sleep(150);
   }
+
+  await prisma.appConfig.upsert({
+    where: { key: LAST_RUN_KEY },
+    create: { key: LAST_RUN_KEY, value: new Date().toISOString() },
+    update: { value: new Date().toISOString() },
+  });
 
   await logActivity("CRON", `Cron search: ${keywords.length} vektor, ${totalNew} match baru, ${totalDrafts} draf auto-reply`);
   return ok({ window: "search", keywords: keywords.length, summary, newMatches: totalNew, drafts: totalDrafts } as Record<string, unknown>);
