@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { SessionError, requireSessionUser } from "./auth";
 import { prisma } from "./db";
 import { OAuthConfigError, ApiError } from "./threads";
+import crypto from "crypto";
 import { getCronSecret } from "./config";
 
 export function ok(data?: Record<string, unknown>, status = 200) {
@@ -21,7 +22,14 @@ export async function readJson(req: Request): Promise<any> {
 }
 
 export async function isCronAuthorized(req: Request): Promise<boolean> {
-  const expected = await getCronSecret();
+  let expected: string;
+  try {
+    expected = await getCronSecret();
+  } catch (e) {
+    // Fail-closed: tanpa secret yang valid, TOLAK semua request cron.
+    console.error("[tenun]", e instanceof Error ? e.message : e);
+    return false;
+  }
   const auth = req.headers.get("authorization") ?? "";
   const bearer = auth.startsWith("Bearer ") ? auth.slice(7) : null;
   const token =
@@ -29,7 +37,11 @@ export async function isCronAuthorized(req: Request): Promise<boolean> {
     req.headers.get("x-cron-secret") ??
     bearer;
   if (!token) return false;
-  return token === expected;
+  // Perbandingan constant-time untuk menutup celah timing attack.
+  const ab = Buffer.from(token, "utf8");
+  const bb = Buffer.from(expected, "utf8");
+  if (ab.length !== bb.length) return false;
+  return crypto.timingSafeEqual(ab, bb);
 }
 
 export function handleRoute<T>(fn: (req: Request, ctx: any) => Promise<T | NextResponse> | T | NextResponse) {
