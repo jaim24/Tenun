@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { handleRoute, readJson, fail } from "@/lib/http";
+import { handleRoute, readJson, fail, parseLimit } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +11,7 @@ export const GET = handleRoute(async (req) => {
     | "SENT"
     | "SKIPPED"
     | "FAILED";
-  const limit = Math.min(Number(url.searchParams.get("limit") ?? 100), 300);
+  const limit = parseLimit(url.searchParams.get("limit"), 100, 300);
 
   const drafts = await prisma.replyDraft.findMany({
     where: { status },
