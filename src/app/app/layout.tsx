@@ -1,6 +1,6 @@
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { getPublishingQuota } from "@/lib/threads";
+import { getCachedQuota } from "@/lib/quota";
 import Sidebar from "./sidebar";
 import Topbar from "./topbar";
 import ToastProvider from "@/components/toast";
@@ -18,14 +18,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     prisma.threadPost.count({ where: { status: "SCHEDULED" } }),
   ]);
 
+  // Kuota di-cache 10 menit (lib/quota.ts): tidak lagi menelepon Meta API
+  // setiap buka halaman. getCachedQuota tidak pernah throw (null saat gagal).
   let quota: { postsUsed: number; postsTotal: number } | null = null;
   if (account?.accessToken) {
-    try {
-      const q = await getPublishingQuota(account.threadsUserId, account.accessToken);
-      quota = { postsUsed: q.usage.posts, postsTotal: q.totals.posts };
-    } catch {
-      quota = null;
-    }
+    quota = await getCachedQuota(account.threadsUserId, account.accessToken);
   }
 
   return (

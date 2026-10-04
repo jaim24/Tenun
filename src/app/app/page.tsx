@@ -2,7 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import Badge from "@/components/badge";
 import Icon from "@/components/icon";
-import { PUBLISHING_LIMIT, getPublishingQuota } from "@/lib/threads";
+import { PUBLISHING_LIMIT } from "@/lib/threads";
+import { getCachedQuota } from "@/lib/quota";
 import { clockUtc, formatUtc, inHumanized, timeAgo } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -36,14 +37,11 @@ export default async function DashboardPage() {
     prisma.replyDraft.count({ where: { createdAt: { gte: dayAgo } } }),
   ]);
 
+  // Kuota di-cache 10 menit (lib/quota.ts) dan berbagi cache dengan layout
+  // dalam request yang sama: maksimal 1 panggilan Meta API per 10 menit.
   let quota: { postsUsed: number; postsTotal: number } | null = null;
   if (account?.accessToken) {
-    try {
-      const q = await getPublishingQuota(account.threadsUserId, account.accessToken);
-      quota = { postsUsed: q.usage.posts, postsTotal: q.totals.posts };
-    } catch {
-      quota = null;
-    }
+    quota = await getCachedQuota(account.threadsUserId, account.accessToken);
   }
 
   const used = Math.min(quota?.postsUsed ?? 0, quota?.postsTotal ?? PUBLISHING_LIMIT);
