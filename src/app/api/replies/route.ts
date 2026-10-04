@@ -45,7 +45,14 @@ export const PATCH = handleRoute(async (req, ctx: any) => {
     if (text.length > 500) return fail("Naskah balasan maksimal 500 karakter", 422);
     data.suggestedText = text;
   }
-  if (body.status === "PENDING") data.status = "PENDING";
+  if (body.status === "PENDING") {
+    // Cegah balasan ganda: draf SENT tidak boleh kembali ke PENDING
+    // (kalau bisa, POST /replies/[id] akan mengirim balasan kedua).
+    if (draft.status === "SENT") {
+      return fail("Draf yang sudah terkirim (SENT) tidak bisa dikembalikan ke PENDING", 422);
+    }
+    data.status = "PENDING";
+  }
 
   const updated = await prisma.replyDraft.update({ where: { id }, data });
   return { draft: updated };
