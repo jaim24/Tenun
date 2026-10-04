@@ -138,7 +138,7 @@ export default function ComposeForm({
     setText(next.slice(0, 500));
     setAffSelection("none");
     setAffCustom("");
-    setAffNotice({ kind: "ok", msg: "Link affiliate disisipkan ke naskah ✓ Sesuaikan & periksa karakter." });
+    setAffNotice({ kind: "ok", msg: "Link affiliate disisipkan ke naskah. Sesuaikan & periksa karakter." });
     textRef.current?.focus();
   }
 
@@ -174,10 +174,10 @@ export default function ComposeForm({
         kind: "ok",
         msg:
           kind === "now"
-            ? "Thread terbit sekarang ✓"
+            ? "Thread terbit sekarang"
             : kind === "schedule"
-            ? "Post dijadwalkan ✓"
-            : "Draf tersimpan ✓",
+            ? "Post dijadwalkan"
+            : "Draf tersimpan",
       });
       router.refresh();
     } catch (err) {
@@ -269,7 +269,7 @@ export default function ComposeForm({
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-ash-rise text-foam-ink font-mono text-[11px] border border-hairline hover:border-ember/40 transition-colors disabled:opacity-50"
                     type="button"
                   >
-                    <span className="text-ember">✦</span>
+                    <Icon name="auto_awesome" className="text-ember text-[14px]" />
                     {p.label}
                     <span className="text-dim-veil normal-case">— {p.note}</span>
                   </button>
@@ -278,7 +278,7 @@ export default function ComposeForm({
             )}
             <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono">
               <Link href="/app/settings" className="text-caution-amber hover:underline">
-                ⚙ Atur AI (API key) di Settings → Lingkungan
+                <Icon name="settings" className="text-[14px] inline-block align-middle mr-1" /> Atur AI (API key) di Settings → Lingkungan
               </Link>
             </div>
 
@@ -454,7 +454,7 @@ export default function ComposeForm({
         <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-hairline">
           {!connected && (
             <Link href="/app/settings" className="font-mono text-[11px] text-caution-amber hover:underline">
-              ⚠ Belum ada akun Threads terhubung — klik untuk menyambung.
+              <Icon name="warning" className="text-[14px] inline-block align-middle mr-1" />Belum ada akun Threads terhubung — klik untuk menyambung.
             </Link>
           )}
           <div className="flex ml-auto gap-2">
