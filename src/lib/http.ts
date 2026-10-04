@@ -69,3 +69,13 @@ export async function authed(req: Request) {
 }
 
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Parse parameter limit dengan aman. Number("abc") menghasilkan NaN yang
+ * lolos dari `??` dan membuat Prisma throw → 500. Selalu fallback ke default.
+ */
+export function parseLimit(raw: string | number | null | undefined, def = 100, max = 300): number {
+  const n = typeof raw === "number" ? raw : Number(raw ?? def);
+  if (!Number.isFinite(n) || n <= 0) return def;
+  return Math.min(Math.floor(n), max);
+}
