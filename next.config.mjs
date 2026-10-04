@@ -6,6 +6,10 @@ const nextConfig = {
       { protocol: "http", hostname: "**" },
     ],
   },
+  experimental: {
+    // Perkecil bundle JS: hanya ikon lucide-react yang dipakai yang dibundel.
+    optimizePackageImports: ["lucide-react"],
+  },
 };
 
 export default nextConfig;
